@@ -1,0 +1,17 @@
+[
+  { "FollowerId": 1, "FollowingId": 2 },
+  { "FollowerId": 1, "FollowingId": 3 },
+  { "FollowerId": 1, "FollowingId": 4 },
+  { "FollowerId": 2, "FollowingId": 1 },
+  { "FollowerId": 2, "FollowingId": 3 },
+  { "FollowerId": 2, "FollowingId": 5 },
+  { "FollowerId": 3, "FollowingId": 1 },
+  { "FollowerId": 3, "FollowingId": 2 },
+  { "FollowerId": 3, "FollowingId": 4 },
+  { "FollowerId": 3, "FollowingId": 5 },
+  { "FollowerId": 4, "FollowingId": 1 },
+  { "FollowerId": 4, "FollowingId": 3 },
+  { "FollowerId": 5, "FollowingId": 2 },
+  { "FollowerId": 5, "FollowingId": 3 },
+  { "FollowerId": 5, "FollowingId": 4 }
+]

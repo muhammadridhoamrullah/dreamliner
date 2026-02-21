@@ -1,0 +1,36 @@
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Backend
+backend-dreamliner/node_modules/
+backend-dreamliner/dist/
+backend-dreamliner/.env
+backend-dreamliner/logs/
+backend-dreamliner/*.log
+
+
+
+# Frontend
+frontend-dreamliner/node_modules/
+frontend-dreamliner/dist/
+frontend-dreamliner/.env
+
+
+# Next.js
+nextjs-dreamliner/node_modules/
+nextjs-dreamliner/.next/
+nextjs-dreamliner/.env

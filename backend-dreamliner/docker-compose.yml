@@ -1,0 +1,98 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: backend-dreamliner-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./logs:/app/logs
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
+      - EMAIL=${EMAIL}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - dreamliner-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres-dreamliner-dev
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=dreamliner
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - dreamliner-network
+
+  # ============================================
+  # RABBITMQ SERVICE - BARU
+  # ============================================
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: dreamliner-rabbitmq
+    ports:
+      - "5672:5672" # RabbitMQ port (untuk aplikasi)
+      - "15672:15672" # Management UI (untuk monitoring)
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 60s
+    networks:
+      - dreamliner-network
+
+  # ============================================
+  # LIGHT WORKER - Email Processing
+  # ============================================
+  worker-light:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: worker-light-dreamliner
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./logs:/app/logs
+    environment:
+      - NODE_ENV=development
+      - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
+      - EMAIL=${EMAIL}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - dreamliner-network
+    command: npm run worker:light
+    restart: unless-stopped
+    # Scale command: docker-compose up -d --scale worker-light=3
+
+volumes:
+  postgres-data:
+  rabbitmq_data:
+
+networks:
+  dreamliner-network:
+    driver: bridge

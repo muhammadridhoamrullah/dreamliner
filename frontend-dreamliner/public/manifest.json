@@ -1,0 +1,24 @@
+{
+  "name": "Dreamliner - Connect with Friends",
+  "short_name": "Dreamliner",
+  "description": "Share photos, videos, and connect with friends",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3d0563",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/assets/images/insta192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/images/insta512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "UserId": 1,
+    "imageUrl": "https://picsum.photos/600/600?random=1",
+    "caption": "Beautiful sunset at the beach 🌅 #travel #sunset"
+  },
+  {
+    "id": 2,
+    "UserId": 1,
+    "imageUrl": "https://picsum.photos/600/600?random=2",
+    "caption": "Morning coffee vibes ☕️"
+  },
+  {
+    "id": 3,
+    "UserId": 2,
+    "imageUrl": "https://picsum.photos/600/600?random=3",
+    "caption": "Nature photography 🌲📸 #nature #photography"
+  },
+  {
+    "id": 4,
+    "UserId": 2,
+    "imageUrl": "https://picsum.photos/600/600?random=4",
+    "caption": "Mountain adventures ⛰️"
+  },
+  {
+    "id": 5,
+    "UserId": 3,
+    "imageUrl": "https://picsum.photos/600/600?random=5",
+    "caption": "Coding all night 💻 #developer #coding"
+  },
+  {
+    "id": 6,
+    "UserId": 3,
+    "imageUrl": "https://picsum.photos/600/600?random=6",
+    "caption": "New project launch! 🚀"
+  },
+  {
+    "id": 7,
+    "UserId": 4,
+    "imageUrl": "https://picsum.photos/600/600?random=7",
+    "caption": "New artwork finished 🎨 #art #digitalart"
+  },
+  {
+    "id": 8,
+    "UserId": 4,
+    "imageUrl": "https://picsum.photos/600/600?random=8",
+    "caption": "Work in progress 👨‍🎨"
+  },
+  {
+    "id": 9,
+    "UserId": 5,
+    "imageUrl": "https://picsum.photos/600/600?random=9",
+    "caption": "Morning workout routine 💪 #fitness #workout"
+  },
+  {
+    "id": 10,
+    "UserId": 5,
+    "imageUrl": "https://picsum.photos/600/600?random=10",
+    "caption": "Healthy meal prep 🥗"
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "UserId": 1,
+    "type": "like",
+    "content": "bob_smith liked your post",
+    "isRead": false
+  },
+  {
+    "UserId": 1,
+    "type": "comment",
+    "content": "charlie_dev commented on your post",
+    "isRead": false
+  },
+  {
+    "UserId": 1,
+    "type": "follow",
+    "content": "diana_art started following you",
+    "isRead": true
+  },
+  {
+    "UserId": 2,
+    "type": "like",
+    "content": "alice_wonder liked your post",
+    "isRead": false
+  },
+  {
+    "UserId": 3,
+    "type": "follow",
+    "content": "alice_wonder started following you",
+    "isRead": true
+  },
+  {
+    "UserId": 3,
+    "type": "comment",
+    "content": "bob_smith commented on your post",
+    "isRead": false
+  },
+  {
+    "UserId": 4,
+    "type": "like",
+    "content": "alice_wonder liked your post",
+    "isRead": false
+  },
+  {
+    "UserId": 5,
+    "type": "comment",
+    "content": "charlie_dev commented on your post",
+    "isRead": true
+  }
+]

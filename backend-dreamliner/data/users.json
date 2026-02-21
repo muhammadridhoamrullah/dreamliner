@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "username": "alice_wonder",
+    "email": "alice@example.com",
+    "password": "password123",
+    "fullName": "Alice Wonderland",
+    "bio": "Travel enthusiast 🌍 | Coffee lover ☕",
+    "avatar": "https://i.pravatar.cc/150?img=1",
+    "isVerified": true
+  },
+  {
+    "id": 2,
+    "username": "bob_smith",
+    "email": "bob@example.com",
+    "password": "password123",
+    "fullName": "Bob Smith",
+    "bio": "Photographer 📸 | Nature lover 🌲",
+    "avatar": "https://i.pravatar.cc/150?img=2",
+    "isVerified": false
+  },
+  {
+    "id": 3,
+    "username": "charlie_dev",
+    "email": "charlie@example.com",
+    "password": "password123",
+    "fullName": "Charlie Developer",
+    "bio": "Full Stack Developer 💻 | Tech geek",
+    "avatar": "https://i.pravatar.cc/150?img=3",
+    "isVerified": true
+  },
+  {
+    "id": 4,
+    "username": "diana_art",
+    "email": "diana@example.com",
+    "password": "password123",
+    "fullName": "Diana Artist",
+    "bio": "Digital Artist 🎨 | Creative soul",
+    "avatar": "https://i.pravatar.cc/150?img=4",
+    "isVerified": false
+  },
+  {
+    "id": 5,
+    "username": "eve_fitness",
+    "email": "eve@example.com",
+    "password": "password123",
+    "fullName": "Eve Johnson",
+    "bio": "Fitness Coach 💪 | Healthy lifestyle",
+    "avatar": "https://i.pravatar.cc/150?img=5",
+    "isVerified": true
+  }
+]

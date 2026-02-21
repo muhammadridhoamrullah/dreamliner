@@ -1,0 +1,62 @@
+[
+  {
+    "PostId": 1,
+    "UserId": 2,
+    "content": "Amazing view! 😍"
+  },
+  {
+    "PostId": 1,
+    "UserId": 3,
+    "content": "Where is this?"
+  },
+  {
+    "PostId": 2,
+    "UserId": 3,
+    "content": "Coffee looks great!"
+  },
+  {
+    "PostId": 3,
+    "UserId": 1,
+    "content": "Beautiful shot! 📸"
+  },
+  {
+    "PostId": 3,
+    "UserId": 5,
+    "content": "Love the colors"
+  },
+  {
+    "PostId": 5,
+    "UserId": 1,
+    "content": "Keep up the great work! 💪"
+  },
+  {
+    "PostId": 5,
+    "UserId": 2,
+    "content": "What language are you using?"
+  },
+  {
+    "PostId": 7,
+    "UserId": 1,
+    "content": "This is stunning! 🎨"
+  },
+  {
+    "PostId": 7,
+    "UserId": 3,
+    "content": "Your art is incredible"
+  },
+  {
+    "PostId": 9,
+    "UserId": 3,
+    "content": "Inspiring! 💪"
+  },
+  {
+    "PostId": 9,
+    "UserId": 4,
+    "content": "What's your routine?"
+  },
+  {
+    "PostId": 10,
+    "UserId": 3,
+    "content": "Looks delicious! 🥗"
+  }
+]
