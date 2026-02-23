@@ -3,6 +3,7 @@ const { authentication } = require("../middlewares/authentication");
 
 const userRouter = require("express").Router();
 
+userRouter.get("/find/:username", UserController.findByUsername);
 userRouter.use(authentication);
 userRouter.get("/me", UserController.getMyProfile);
 

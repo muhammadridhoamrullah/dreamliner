@@ -17,6 +17,23 @@ class UserController {
       next(error);
     }
   }
+
+  static async findByUsername(req, res, next) {
+    try {
+      const { username } = req.params;
+
+      //   Panggil service untuk mendapatkan data user berdasarkan username
+      const userData = await UserService.findByUsername(username);
+
+      res.status(200).json({
+        success: true,
+        data: userData,
+        message: "Get user by username success",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = {

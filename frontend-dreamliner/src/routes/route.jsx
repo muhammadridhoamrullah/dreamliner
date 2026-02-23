@@ -10,7 +10,7 @@ import { publicAPI } from "../api/axiosInstance";
 async function checkUsername({ params }) {
   const { username } = params;
 
-  let res = await publicAPI.get
+  let res = await publicAPI.get(`users`)
 }
 
 function checkLogin() {
