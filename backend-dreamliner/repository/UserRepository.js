@@ -23,6 +23,14 @@ class UserRepository {
       },
     );
   }
+
+  static async findById(id) {
+    return await User.findByPk(id, {
+      attributes: {
+        exclude: ["password", "updatedAt"],
+      },
+    });
+  }
 }
 
 module.exports = {

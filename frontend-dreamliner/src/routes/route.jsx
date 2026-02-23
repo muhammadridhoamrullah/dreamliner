@@ -4,6 +4,14 @@ import Login from "../pages/(Non-Auth)/Login";
 import Register from "../pages/(Non-Auth)/Register";
 import VerifyEmail from "../pages/(Non-Auth)/VerifyEmail";
 import NotFound from "../components/common/NotFound";
+import Profile from "../pages/(Auth)/Profile";
+import { publicAPI } from "../api/axiosInstance";
+
+async function checkUsername({ params }) {
+  const { username } = params;
+
+  let res = await publicAPI.get
+}
 
 function checkLogin() {
   if (!localStorage.access_token) {
@@ -44,7 +52,20 @@ const router = createBrowserRouter([
   {
     path: "/",
     loader: checkLogin,
-    element: <div>Protected Home Page</div>,
+    children: [
+      {
+        path: "",
+        element: <h1>Home Page</h1>,
+      },
+      {
+        path: "settings",
+        element: <h1>Settings Page</h1>,
+      },
+      {
+        path: ":username",
+        element: <Profile />,
+      },
+    ],
   },
   {
     path: "*",

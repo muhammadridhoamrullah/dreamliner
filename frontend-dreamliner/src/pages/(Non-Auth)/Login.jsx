@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LuEye } from "react-icons/lu";
 import { LuEyeClosed } from "react-icons/lu";
 import { useState } from "react";
@@ -7,11 +7,11 @@ import { FaMeta } from "react-icons/fa6";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../store/authSlice";
+import { useEffect } from "react";
 
 export default function Login() {
-  // Dispatch
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  // Selector
   const { loading, error, data, isLogin } = useSelector((state) => state.auth);
 
   // State untuk form login
@@ -23,6 +23,19 @@ export default function Login() {
   const isFormValid = formData.email && formData.password;
   // State untuk toggle password
   const [showPassword, setShowPassword] = useState(false);
+
+  // useEffect
+  useEffect(() => {
+    if (isLogin) {
+      navigate("/");
+    }
+  }, [isLogin, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   // Function change handler untuk form login
   function changeHandler(e) {
