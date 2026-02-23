@@ -8,9 +8,23 @@ import Profile from "../pages/(Auth)/Profile";
 import { publicAPI } from "../api/axiosInstance";
 
 async function checkUsername({ params }) {
-  const { username } = params;
+  try {
+    const { username } = params;
 
-  let res = await publicAPI.get(`users`)
+    let res = await publicAPI.get(`users/find/${username}`);
+
+    if (!res.data.success) {
+      throw new Response("User not found", { status: 404 });
+    }
+
+    return res.data.data;
+  } catch (error) {
+    if (error.response?.status === 404) {
+      throw new Response("User not found", { status: 404 });
+    }
+
+    throw new Response("Server error", { status: 500 });
+  }
 }
 
 function checkLogin() {
@@ -63,7 +77,9 @@ const router = createBrowserRouter([
       },
       {
         path: ":username",
+        loader: checkUsername,
         element: <Profile />,
+        errorElement: <NotFound />,
       },
     ],
   },
