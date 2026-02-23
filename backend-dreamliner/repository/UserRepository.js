@@ -6,7 +6,12 @@ class UserRepository {
   }
 
   static async findByUsername(username) {
-    return await User.findOne({ where: { username } });
+    return await User.findOne({
+      where: { username },
+      attributes: {
+        exclude: ["password", "updatedAt"],
+      },
+    });
   }
 
   static async createUser(data) {
