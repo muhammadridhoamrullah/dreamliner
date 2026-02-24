@@ -1,4 +1,11 @@
-const { User } = require("../models/index");
+const {
+  User,
+  Post,
+  Comment,
+  Like,
+  Follow,
+  Notification,
+} = require("../models/index");
 
 class UserRepository {
   static async findByEmail(email) {
@@ -11,6 +18,34 @@ class UserRepository {
       attributes: {
         exclude: ["password", "updatedAt"],
       },
+      include: [
+        {
+          model: Post,
+          as: "Posts",
+        },
+        {
+          model: Comment,
+          as: "Comments",
+        },
+        {
+          model: Like,
+          as: "Likes",
+        },
+        {
+          model: User,
+          as: "Followers",
+          through: { attributes: [] },
+        },
+        {
+          model: User,
+          as: "Followings",
+          through: { attributes: [] },
+        },
+        {
+          model: Notification,
+          as: "Notifications",
+        },
+      ],
     });
   }
 

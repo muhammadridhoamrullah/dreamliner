@@ -7,6 +7,14 @@ import toast from "react-hot-toast";
 import { publicAPI } from "../../api/axiosInstance";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserByUsername } from "../../store/userSlice";
+import { PiDotsNineFill } from "react-icons/pi";
+import { PiDotsNineBold } from "react-icons/pi";
+import { MdSmartDisplay } from "react-icons/md";
+import { MdOutlineSmartDisplay } from "react-icons/md";
+import { BiSolidUserPin } from "react-icons/bi";
+import { BiUserPin } from "react-icons/bi";
+import ProfileFeeds from "../../components/common/profile/ProfileFeeds";
+
 export default function Profile() {
   // State untuk menyimpan data user
   const { username } = useParams();
@@ -18,6 +26,12 @@ export default function Profile() {
   } = useSelector((state) => state.user);
   console.log(dUser, "USER");
 
+  // state untuk active tab
+  const [activeTab, setActiveTab] = useState("posts");
+
+  let feed = [1, 2, 3];
+  let reels = [2];
+  let tags = [1];
   // useEffect untuk mendapatkan data user berdasarkan username
   useEffect(() => {
     if (username) {
@@ -52,6 +66,30 @@ export default function Profile() {
       return <span key={index}>{part}</span>;
     });
   }
+
+  // Function jumlah post
+  function countPosts(posts) {
+    return posts.length;
+  }
+
+  // Function hitung jumlah followers
+  function countFollowersAndFollowing(followLength) {
+    if (followLength < 1000) {
+      return followLength.toString();
+    } else if (followLength < 1000000) {
+      return Math.floor(followLength / 1000) + "K";
+    } else {
+      const millions = (followLength / 1000000).toFixed(1);
+      return `${parseFloat(millions)} M`;
+    }
+  }
+
+  // menu tab
+  const menuTabs = {
+    posts: <ProfileFeeds data={dUser?.Posts} />,
+    reels: <div>Reels</div>,
+    tagged: <div>Tagged</div>,
+  };
   return (
     <div className="bg-green-900 w-full min-h-screen flex justify-center items-start py-6">
       {/* Awal Profile */}
@@ -99,7 +137,9 @@ export default function Profile() {
                 {/* Awal Post */}
                 <div className="bg-pink-400 w-fit h-fit flex justify-start items-center gap-1">
                   {/* Awal Jumlah Post */}
-                  <span className="font-semibold">100</span>
+                  <span className="font-semibold">
+                    {countPosts(dUser?.Posts || [])}
+                  </span>
                   {/* Akhir Jumlah Post */}
 
                   {/* Awal Teks Post */}
@@ -111,7 +151,9 @@ export default function Profile() {
                 {/* Awal Follower */}
                 <div className="bg-purple-500 w-fit h-fit flex justify-start items-center gap-1">
                   {/* Awal Jumlah Followe */}
-                  <span className="font-semibold">11,3 m</span>
+                  <span className="font-semibold">
+                    {countFollowersAndFollowing(dUser?.Followers.length)}
+                  </span>
                   {/* Akhir Jumlah Followe */}
 
                   {/* Awal Teks Follower */}
@@ -123,7 +165,9 @@ export default function Profile() {
                 {/* Awal Following */}
                 <div className="bg-neutral-500 w-fit h-fit flex justify-start items-center gap-1">
                   {/* Awal Jumlah Following */}
-                  <span className="font-semibold">0</span>
+                  <span className="font-semibold">
+                    {countFollowersAndFollowing(dUser?.Followings.length)}
+                  </span>
                   {/* Akhir Jumlah Following */}
 
                   {/* Awal Teks Following */}
@@ -136,7 +180,7 @@ export default function Profile() {
 
               {/* Awal Bio */}
               <div className=" w-full h-fit text-sm leading-relaxed whitespace-pre-line">
-                {formatBio(dUser?.bio)}
+                {formatBio(dUser?.bio || "")}
               </div>
               {/* Akhir Bio */}
             </div>
@@ -163,7 +207,46 @@ export default function Profile() {
         {/* Akhir Data User */}
 
         {/* Awal Feed */}
-        <div className="bg-purple-500 w-full h-full">Feed Foto dan Reels</div>
+        <div className="bg-pink-500 w-full h-fit flex flex-col justify-start items-start">
+          {/* Awal Render Icon Feed, Reels, and Tags */}
+          <div className="bg-yellow-900 w-full h-10 flex justify-around items-center">
+            {feed.length > 0 && (
+              <button className="bg-blue-500 flex-1 flex justify-center items-center">
+                {activeTab === "posts" ? (
+                  <PiDotsNineFill size={30} />
+                ) : (
+                  <PiDotsNineBold size={30} />
+                )}
+              </button>
+            )}
+            {reels.length > 0 && (
+              <button className="bg-cyan-900 flex-1 flex justify-center items-center">
+                {activeTab === "reels" ? (
+                  <MdSmartDisplay size={30} />
+                ) : (
+                  <MdOutlineSmartDisplay size={30} />
+                )}
+              </button>
+            )}
+            {tags.length > 0 && (
+              <button className="bg-pink-900 flex-1 flex justify-center items-center">
+                {activeTab === "tags" ? (
+                  <BiSolidUserPin size={30} />
+                ) : (
+                  <BiUserPin size={30} />
+                )}
+              </button>
+            )}
+          </div>
+          {/* Akhir Render Icon Feed, Reels, and Tags */}
+
+          {/* Awal Render Sesuai Menu */}
+          <div className="bg-green-500 w-full h-fit flex justify-start items-start overflow-hidden rounded-md">
+            {menuTabs[activeTab]}
+          </div>
+
+          {/* Akhir Render Sesuai Menu */}
+        </div>
         {/* Akhir Feed */}
       </div>
       {/* Akhir Profile */}
@@ -172,13 +255,135 @@ export default function Profile() {
 }
 
 // {
-//     "id": 13,
-//     "username": "leehyein",
-//     "email": "leehyein@gmail.com",
-//     "fullName": "Lee Hyein",
-//     "bio": "Lee Hyein NJZ",
-//     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEOW9y1yhTF_ZcQTR_0c4PIwmXJExloOWpcw&s",
+//     "id": 5,
+//     "username": "ridho",
+//     "email": "mridhoamrullah99@gmail.com",
+//     "fullName": "Eve Johnson",
+//     "bio": "Fitness Coach 💪 | Healthy lifestyle",
+//     "avatar": "https://i.pravatar.cc/150?img=5",
 //     "isVerified": true,
-//     "createdAt": "2026-02-20T07:33:14.157Z",
-//     "deletedAt": null
+//     "createdAt": "2026-02-06T08:40:13.077Z",
+//     "deletedAt": null,
+//     "Posts": [
+//         {
+//             "id": 9,
+//             "UserId": 5,
+//             "imageUrl": "https://picsum.photos/600/600?random=9",
+//             "caption": "Morning workout routine 💪 #fitness #workout",
+//             "createdAt": "2026-02-06T08:40:13.912Z",
+//             "updatedAt": "2026-02-06T08:40:13.912Z",
+//             "deletedAt": null
+//         },
+//         {
+//             "id": 10,
+//             "UserId": 5,
+//             "imageUrl": "https://picsum.photos/600/600?random=10",
+//             "caption": "Healthy meal prep 🥗",
+//             "createdAt": "2026-02-06T08:40:13.912Z",
+//             "updatedAt": "2026-02-06T08:40:13.912Z",
+//             "deletedAt": null
+//         }
+//     ],
+//     "Comments": [
+//         {
+//             "id": 5,
+//             "PostId": 3,
+//             "UserId": 5,
+//             "content": "Love the colors",
+//             "createdAt": "2026-02-06T08:40:14.006Z",
+//             "updatedAt": "2026-02-06T08:40:14.006Z",
+//             "deletedAt": null
+//         }
+//     ],
+//     "Likes": [
+//         {
+//             "id": 8,
+//             "PostId": 3,
+//             "UserId": 5,
+//             "createdAt": "2026-02-06T08:40:13.947Z",
+//             "updatedAt": "2026-02-06T08:40:13.947Z",
+//             "deletedAt": null
+//         }
+//     ],
+//     "Followers": [
+//         {
+//             "id": 2,
+//             "username": "bob_smith",
+//             "email": "bob@example.com",
+//             "password": "$2b$10$buQze9uSO/pa2PPjKduUB.2wCI9Kedszq076dvezv3j1cp6z6Z3Le",
+//             "fullName": "Bob Smith",
+//             "bio": "Photographer 📸 | Nature lover 🌲",
+//             "avatar": "https://i.pravatar.cc/150?img=2",
+//             "isVerified": false,
+//             "createdAt": "2026-02-06T08:40:13.077Z",
+//             "updatedAt": "2026-02-06T08:40:13.077Z",
+//             "deletedAt": null
+//         },
+//         {
+//             "id": 3,
+//             "username": "charlie_dev",
+//             "email": "charlie@example.com",
+//             "password": "$2b$10$bLpF/073f.JvTiReO/fze.AvydW4GVB5GhvrVN4SdQxHTaxj/ZIuO",
+//             "fullName": "Charlie Developer",
+//             "bio": "Full Stack Developer 💻 | Tech geek",
+//             "avatar": "https://i.pravatar.cc/150?img=3",
+//             "isVerified": true,
+//             "createdAt": "2026-02-06T08:40:13.077Z",
+//             "updatedAt": "2026-02-06T08:40:13.077Z",
+//             "deletedAt": null
+//         }
+//     ],
+//     "Followings": [
+//         {
+//             "id": 2,
+//             "username": "bob_smith",
+//             "email": "bob@example.com",
+//             "password": "$2b$10$buQze9uSO/pa2PPjKduUB.2wCI9Kedszq076dvezv3j1cp6z6Z3Le",
+//             "fullName": "Bob Smith",
+//             "bio": "Photographer 📸 | Nature lover 🌲",
+//             "avatar": "https://i.pravatar.cc/150?img=2",
+//             "isVerified": false,
+//             "createdAt": "2026-02-06T08:40:13.077Z",
+//             "updatedAt": "2026-02-06T08:40:13.077Z",
+//             "deletedAt": null
+//         },
+//         {
+//             "id": 3,
+//             "username": "charlie_dev",
+//             "email": "charlie@example.com",
+//             "password": "$2b$10$bLpF/073f.JvTiReO/fze.AvydW4GVB5GhvrVN4SdQxHTaxj/ZIuO",
+//             "fullName": "Charlie Developer",
+//             "bio": "Full Stack Developer 💻 | Tech geek",
+//             "avatar": "https://i.pravatar.cc/150?img=3",
+//             "isVerified": true,
+//             "createdAt": "2026-02-06T08:40:13.077Z",
+//             "updatedAt": "2026-02-06T08:40:13.077Z",
+//             "deletedAt": null
+//         },
+//         {
+//             "id": 4,
+//             "username": "diana_art",
+//             "email": "diana@example.com",
+//             "password": "$2b$10$xQ14E.IEBCjhATyXYif6buVUhphGZN52xW1pmTII8u9leuhPC9lr6",
+//             "fullName": "Diana Artist",
+//             "bio": "Digital Artist 🎨 | Creative soul",
+//             "avatar": "https://i.pravatar.cc/150?img=4",
+//             "isVerified": false,
+//             "createdAt": "2026-02-06T08:40:13.077Z",
+//             "updatedAt": "2026-02-06T08:40:13.077Z",
+//             "deletedAt": null
+//         }
+//     ],
+//     "Notifications": [
+//         {
+//             "id": 8,
+//             "UserId": 5,
+//             "type": "comment",
+//             "content": "charlie_dev commented on your post",
+//             "isRead": true,
+//             "createdAt": "2026-02-06T08:40:14.060Z",
+//             "updatedAt": "2026-02-06T08:40:14.060Z",
+//             "deletedAt": null
+//         }
+//     ]
 // }
