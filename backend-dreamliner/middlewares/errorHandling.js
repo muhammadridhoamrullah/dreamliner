@@ -80,6 +80,11 @@ function errorHandler(err, req, res, next) {
       message = "Failed to update user verification status.";
       break;
 
+    case "POST_ID_REQUIRED":
+      statusCode = 400;
+      message = "Post ID is required.";
+      break;
+
     default:
       break;
   }

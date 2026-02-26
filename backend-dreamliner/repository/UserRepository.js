@@ -22,6 +22,16 @@ class UserRepository {
         {
           model: Post,
           as: "Posts",
+          include: [
+            {
+              model: Like,
+              as: "Likes",
+            },
+            {
+              model: Comment,
+              as: "Comments",
+            },
+          ],
         },
         {
           model: Comment,

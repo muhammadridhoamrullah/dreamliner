@@ -14,6 +14,7 @@ import { MdOutlineSmartDisplay } from "react-icons/md";
 import { BiSolidUserPin } from "react-icons/bi";
 import { BiUserPin } from "react-icons/bi";
 import ProfileFeeds from "../../components/common/profile/ProfileFeeds";
+import { BsCamera } from "react-icons/bs";
 
 export default function Profile() {
   // State untuk menyimpan data user
@@ -24,14 +25,10 @@ export default function Profile() {
     error: eUser,
     data: dUser,
   } = useSelector((state) => state.user);
-  console.log(dUser, "USER");
 
   // state untuk active tab
   const [activeTab, setActiveTab] = useState("posts");
 
-  let feed = [1, 2, 3];
-  let reels = [2];
-  let tags = [1];
   // useEffect untuk mendapatkan data user berdasarkan username
   useEffect(() => {
     if (username) {
@@ -84,22 +81,16 @@ export default function Profile() {
     }
   }
 
-  // menu tab
-  const menuTabs = {
-    posts: <ProfileFeeds data={dUser?.Posts} />,
-    reels: <div>Reels</div>,
-    tagged: <div>Tagged</div>,
-  };
   return (
-    <div className="bg-green-900 w-full min-h-screen flex justify-center items-start py-6">
+    <div className="bg-white w-full min-h-screen flex justify-center items-start py-6">
       {/* Awal Profile */}
-      <div className="bg-white w-3/4 h-full flex flex-col gap-4 justify-start items-center ">
+      <div className="w-3/4 h-full flex flex-col gap-10 justify-start items-center ">
         {/* Awal Data User */}
-        <div className="bg-pink-800 w-2/3 h-fit flex flex-col gap-4 justify-center items-center">
+        <div className="w-2/3 h-fit flex flex-col gap-4 justify-center items-center">
           {/* Awal Foto Profile dan Data Diri */}
-          <div className="bg-gray-400 w-full h-fit flex justify-start items-start gap-4">
+          <div className="w-full h-fit flex justify-start items-start gap-4">
             {/* Awal Foto Profile */}
-            <div className="relative bg-amber-950 w-36 h-36 rounded-full overflow-hidden shrink-0">
+            <div className="relative w-36 h-36 rounded-full overflow-hidden shrink-0">
               <img
                 src={dUser?.avatar || `assets/images/defaultAvatar.png`}
                 alt="Foto Profil"
@@ -109,9 +100,9 @@ export default function Profile() {
             {/* Akhir Foto Profile */}
 
             {/* Awal Data User */}
-            <div className="bg-pink-950 flex-1 min-w-0 pt-2 flex flex-col gap-2 justify-start items-start">
+            <div className="flex-1 min-w-0 pt-2 flex flex-col gap-2 justify-start items-start">
               {/* Awal Username */}
-              <div className="bg-green-400 w-full h-fit flex justify-start items-center gap-2">
+              <div className="w-full h-fit flex justify-start items-center gap-2">
                 {/* Awal Username */}
                 <span className="font-bold text-2xl">{dUser?.username}</span>
                 {/* Akhir Username */}
@@ -133,9 +124,9 @@ export default function Profile() {
               <span>{dUser?.fullName}</span>
               {/* Akhir Full Name */}
               {/* Awal Post, Follower, and Following */}
-              <div className="bg-green-500 w-full h-fit text-sm flex justify-start items-center gap-3">
+              <div className="w-full h-fit text-sm flex justify-start items-center gap-3">
                 {/* Awal Post */}
-                <div className="bg-pink-400 w-fit h-fit flex justify-start items-center gap-1">
+                <div className="sw-fit h-fit flex justify-start items-center gap-1">
                   {/* Awal Jumlah Post */}
                   <span className="font-semibold">
                     {countPosts(dUser?.Posts || [])}
@@ -143,13 +134,13 @@ export default function Profile() {
                   {/* Akhir Jumlah Post */}
 
                   {/* Awal Teks Post */}
-                  <span>post</span>
+                  <span>posts</span>
                   {/* Akhir Teks Post */}
                 </div>
                 {/* Akhir Post */}
 
                 {/* Awal Follower */}
-                <div className="bg-purple-500 w-fit h-fit flex justify-start items-center gap-1">
+                <div className="w-fit h-fit flex justify-start items-center gap-1">
                   {/* Awal Jumlah Followe */}
                   <span className="font-semibold">
                     {countFollowersAndFollowing(dUser?.Followers.length)}
@@ -163,7 +154,7 @@ export default function Profile() {
                 {/* Akhir Follower */}
 
                 {/* Awal Following */}
-                <div className="bg-neutral-500 w-fit h-fit flex justify-start items-center gap-1">
+                <div className="w-fit h-fit flex justify-start items-center gap-1">
                   {/* Awal Jumlah Following */}
                   <span className="font-semibold">
                     {countFollowersAndFollowing(dUser?.Followings.length)}
@@ -179,7 +170,7 @@ export default function Profile() {
               {/* Akhir Post, Follower, and Following */}
 
               {/* Awal Bio */}
-              <div className=" w-full h-fit text-sm leading-relaxed whitespace-pre-line">
+              <div className="w-full h-fit text-sm leading-relaxed whitespace-pre-line">
                 {formatBio(dUser?.bio || "")}
               </div>
               {/* Akhir Bio */}
@@ -189,7 +180,7 @@ export default function Profile() {
           {/* Akhir Foto Profile dan Data Diri */}
 
           {/* Awal Button Follow */}
-          <div className="bg-amber-900 w-full h-fit flex justify-center items-center gap-2">
+          <div className="w-full h-fit flex justify-center items-center gap-2">
             {/* Awal Button Follow */}
             <button className="text-white font-medium text-sm bg-blue-600 hover:bg-blue-900 w-[92%] h-12  text-center rounded-xl cursor-pointer">
               Follow
@@ -207,20 +198,35 @@ export default function Profile() {
         {/* Akhir Data User */}
 
         {/* Awal Feed */}
-        <div className="bg-pink-500 w-full h-fit flex flex-col justify-start items-start">
-          {/* Awal Render Icon Feed, Reels, and Tags */}
-          <div className="bg-yellow-900 w-full h-10 flex justify-around items-center">
-            {feed.length > 0 && (
-              <button className="bg-blue-500 flex-1 flex justify-center items-center">
-                {activeTab === "posts" ? (
-                  <PiDotsNineFill size={30} />
-                ) : (
-                  <PiDotsNineBold size={30} />
-                )}
-              </button>
-            )}
-            {reels.length > 0 && (
-              <button className="bg-cyan-900 flex-1 flex justify-center items-center">
+        {dUser?.Posts.length === 0 ? (
+          <div className="w-full h-52 flex flex-col gap-2 justify-center items-center">
+            {/* Awal Icon Camera */}
+            <BsCamera size={100} />
+            {/* Akhir Icon Camera */}
+
+            {/* Awal Teks No Posts Yet */}
+            <span className="text-xl font-bold">No posts yet</span>
+            {/* Akhir Teks No Posts Yet */}
+          </div>
+        ) : (
+          <div className="w-full h-fit flex flex-col justify-start items-start">
+            {/* Awal Render Icon Feed, Reels, and Tags */}
+            <div className="w-full h-10 flex justify-around items-center">
+              {dUser?.Posts.length > 0 && (
+                <button
+                  className={`flex-1 flex justify-center items-center border-b-2 cursor-pointer transition-all duration-300 ${activeTab === "posts" ? " border-black" : "border-transparent hover:border-gray-300"}`}
+                >
+                  {activeTab === "posts" ? (
+                    <PiDotsNineFill size={30} />
+                  ) : (
+                    <PiDotsNineBold size={30} />
+                  )}
+                </button>
+              )}
+              {/* {reels.length > 0 && (
+              <button
+                className={`flex-1 flex justify-center items-center border-b-2 cursor-pointer transition-all duration-300   ${activeTab === "reels" ? " border-black" : "border-transparent hover:border-gray-300"}`}
+              >
                 {activeTab === "reels" ? (
                   <MdSmartDisplay size={30} />
                 ) : (
@@ -229,24 +235,28 @@ export default function Profile() {
               </button>
             )}
             {tags.length > 0 && (
-              <button className="bg-pink-900 flex-1 flex justify-center items-center">
+              <button
+                className={`flex-1 flex justify-center items-center border-b-2 cursor-pointer transition-all duration-300 ${activeTab === "tags" ? "border-black" : "border-transparent hover:border-gray-300"}`}
+              >
                 {activeTab === "tags" ? (
                   <BiSolidUserPin size={30} />
                 ) : (
                   <BiUserPin size={30} />
                 )}
               </button>
-            )}
-          </div>
-          {/* Akhir Render Icon Feed, Reels, and Tags */}
+            )} */}
+            </div>
+            {/* Akhir Render Icon Feed, Reels, and Tags */}
 
-          {/* Awal Render Sesuai Menu */}
-          <div className="bg-green-500 w-full h-fit flex justify-start items-start overflow-hidden rounded-md">
-            {menuTabs[activeTab]}
-          </div>
+            {/* Awal Render Sesuai Menu */}
+            <div className="w-full h-fit overflow-hidden rounded-md">
+              {activeTab === "posts" && <ProfileFeeds data={dUser?.Posts} />}
+            </div>
 
-          {/* Akhir Render Sesuai Menu */}
-        </div>
+            {/* Akhir Render Sesuai Menu */}
+          </div>
+        )}
+
         {/* Akhir Feed */}
       </div>
       {/* Akhir Profile */}

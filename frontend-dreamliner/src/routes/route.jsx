@@ -6,6 +6,8 @@ import VerifyEmail from "../pages/(Non-Auth)/VerifyEmail";
 import NotFound from "../components/common/NotFound";
 import Profile from "../pages/(Auth)/Profile";
 import { publicAPI } from "../api/axiosInstance";
+import ProfileLayout from "../components/layout/(Non-Auth)/ProfileLayout";
+import PostModalFeed from "../components/common/post/PostModalFeed";
 
 async function checkUsername({ params }) {
   try {
@@ -65,24 +67,19 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    loader: checkLogin,
+    element: <ProfileLayout />,
     children: [
       {
-        path: "",
-        element: <h1>Home Page</h1>,
-      },
-      {
-        path: "settings",
-        element: <h1>Settings Page</h1>,
-      },
-      {
         path: ":username",
-        loader: checkUsername,
         element: <Profile />,
-        errorElement: <NotFound />,
+      },
+      {
+        path: "p/:PostId",
+        element: <PostModalFeed />,
       },
     ],
   },
+
   {
     path: "*",
     element: <NotFound />,
