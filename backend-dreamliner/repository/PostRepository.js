@@ -13,6 +13,19 @@ class PostRepository {
         {
           model: Comment,
           as: "Comments",
+          include: [
+            {
+              model: User,
+              as: "Author",
+              attributes: [
+                "id",
+                "username",
+                "avatar",
+                "isVerified",
+                "createdAt",
+              ],
+            },
+          ],
         },
         {
           model: Like,
