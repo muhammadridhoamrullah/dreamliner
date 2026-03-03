@@ -43,6 +43,25 @@ class PostService {
 
     return { liked: true, action: "liked", likeData: newLike };
   }
+
+  static async commentPost(PostId, UserId, comment) {
+    // Cari post berdasarkan PostId
+    const cekPost = await PostRepository.findPostById(PostId);
+
+    if (!cekPost) {
+      throw { name: "POST_NOT_FOUND" };
+    }
+
+    //  Panggil PostRepository untuk membuat data comment baru
+    const newComment = await PostRepository.createComment(
+      PostId,
+      UserId,
+      comment,
+    );
+    console.log(newComment);
+
+    return newComment;
+  }
 }
 
 module.exports = {

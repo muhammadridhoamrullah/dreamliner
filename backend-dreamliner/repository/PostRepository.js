@@ -58,6 +58,28 @@ class PostRepository {
 
     return newLike;
   }
+
+  static async createComment(PostId, UserId, comment) {
+    // Panggil model Comment untuk membuat data comment baru
+    const newComment = await Comment.create({
+      PostId,
+      UserId,
+      content: comment,
+    });
+
+    // Fetch comment dengan author
+    const commentWithuthor = await Comment.findByPk(newComment.id, {
+      include: [
+        {
+          model: User,
+          as: "Author",
+          attributes: ["id", "username", "avatar", "isVerified", "createdAt"],
+        },
+      ],
+    });
+
+    return commentWithuthor;
+  }
 }
 module.exports = {
   PostRepository,

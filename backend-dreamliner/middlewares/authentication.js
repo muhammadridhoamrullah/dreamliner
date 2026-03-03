@@ -45,13 +45,10 @@ async function optionalAuthentication(req, res, next) {
     }
 
     const token = authorization.split(" ")[1];
-    console.log(token, "token option");
 
     const payload = verifyToken(token);
-    console.log(payload, "payload option");
 
     let user = await User.findByPk(payload.id);
-    console.log(user, "user option");
 
     if (!user) {
       req.user = null;

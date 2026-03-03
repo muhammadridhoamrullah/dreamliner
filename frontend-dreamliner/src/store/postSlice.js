@@ -10,6 +10,9 @@ export const postSlice = createSlice({
     loadingLike: false,
     errorLike: null,
     dataLike: null,
+    loadingComment: false,
+    errorComment: null,
+    dataComment: null,
   },
   reducers: {
     findPostByIdReq: (state) => {
@@ -52,6 +55,23 @@ export const postSlice = createSlice({
       state.loadingLike = false;
       state.errorLike = action.payload;
     },
+
+    // comment post
+    commentPostReq: (state) => {
+      state.loadingComment = true;
+      state.errorComment = null;
+    },
+    commentPostSuccess: (state, action) => {
+      state.loadingComment = false;
+      state.dataComment = action.payload;
+      if (state.data?.postData) {
+        state.data.postData.Comments.push(action.payload);
+      }
+    },
+    commentPostError: (state, action) => {
+      state.loadingComment = false;
+      state.errorComment = action.payload;
+    },
   },
 });
 
@@ -62,6 +82,9 @@ export const {
   likePostReq,
   likePostSuccess,
   likePostError,
+  commentPostReq,
+  commentPostSuccess,
+  commentPostError,
 } = postSlice.actions;
 
 //   Thunk untuk mendapatkan data post berdasarkan id
@@ -96,6 +119,27 @@ export function toggleLikePost(PostId) {
       let errMsg =
         error.response?.data?.message || error.message || "An error occurred";
       dispatch(likePostError(errMsg));
+    }
+  };
+}
+
+// Thunk untuk comment post
+export function commentPost(PostId, comment) {
+  return async (dispatch) => {
+    try {
+      dispatch(commentPostReq());
+
+      // Panggil API untuk comment post
+      const response = await privateAPI.post(`/posts/comments/${PostId}`, {
+        comment,
+      });
+      console.log(response, "response commentPost Slice");
+
+      dispatch(commentPostSuccess(response.data.data));
+    } catch (error) {
+      let errMsg =
+        error.response?.data?.message || error.message || "An error occurred";
+      dispatch(commentPostError(errMsg));
     }
   };
 }

@@ -12,7 +12,7 @@ class PostController {
 
       //   Panggil service untuk mendapatkan data post berdasarkan id
       const postData = await PostService.findPostById(PostId, UserId);
-      console.log(postData, "PostData Controller");
+      console.log(postData, "postData controller");
 
       res.status(200).json({
         success: true,
@@ -45,6 +45,41 @@ class PostController {
           : "Post unliked successfully",
       });
     } catch (error) {
+      next(error);
+    }
+  }
+
+  static async commentPost(req, res, next) {
+    try {
+      const { PostId } = req.params;
+      const UserId = req.user.id;
+      const { comment } = req.body;
+      console.log(UserId, "UserId cinta");
+
+      if (!PostId) {
+        throw { name: "POST_ID_REQUIRED" };
+      }
+
+      if (!comment) {
+        throw { name: "COMMENT_CONTENT_REQUIRED" };
+      }
+
+      // Panggil service untuk membuat komentar baru
+      const commentResult = await PostService.commentPost(
+        PostId,
+        UserId,
+        comment,
+      );
+      console.log(commentResult, "commentResult PostController");
+
+      res.status(201).json({
+        success: true,
+        data: commentResult,
+        message: "Comment added successfully",
+      });
+    } catch (error) {
+      console.log(error, "error apa");
+
       next(error);
     }
   }

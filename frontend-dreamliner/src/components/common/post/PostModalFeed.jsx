@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { fetchPostById, toggleLikePost } from "../../../store/postSlice";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  commentPost,
+  fetchPostById,
+  toggleLikePost,
+} from "../../../store/postSlice";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { MdVerified } from "react-icons/md";
 import { BsThreeDots } from "react-icons/bs";
@@ -21,28 +25,36 @@ export default function PostModalFeed() {
   const navigate = useNavigate();
   const { PostId } = useParams();
   const dispatch = useDispatch();
+  const commentInputRef = useRef(null);
   const {
     loading: loadingPost,
     data: dataPost,
     error: errorPost,
   } = useSelector((state) => state.post);
+  console.log(dataPost, "dataPost page");
+
   const { loadingLike, dataLike, errorLike } = useSelector(
     (state) => state.post,
   );
-  console.log(dataLike, "data Like");
+  const { loadingComment, dataComment, errorComment } = useSelector(
+    (state) => state.post,
+  );
 
   const [doComment, setDoComment] = useState("");
 
+  // useEffect untuk mendapatkan data post berdasarkan id
   useEffect(() => {
     dispatch(fetchPostById(PostId));
   }, [dispatch, PostId]);
 
+  // useEffect untuk menangani error post
   useEffect(() => {
     if (errorPost) {
       toast.error(errorPost);
     }
   }, [errorPost]);
 
+  // useEffect untuk lock scroll saat modal dibuka
   useEffect(() => {
     // Lock scroll
     document.body.style.overflow = "hidden";
@@ -53,9 +65,33 @@ export default function PostModalFeed() {
     };
   }, []);
 
+  // useEffect untuk menangani error like
+  useEffect(() => {
+    if (errorLike) {
+      toast.error(errorLike);
+    }
+  }, [errorLike]);
+
+  // useEffect untuk menangani error comment
+  useEffect(() => {
+    if (errorComment) {
+      toast.error(errorComment);
+    }
+  }, [errorComment]);
+
   async function submitCommentHandler(e) {
     e.preventDefault();
-    toast.success(doComment);
+    dispatch(commentPost(PostId, doComment));
+    setDoComment("");
+  }
+
+  function handleFocusComment() {
+    commentInputRef.current?.focus();
+
+    commentInputRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
   }
 
   return (
@@ -80,21 +116,27 @@ export default function PostModalFeed() {
               {/* Awal Foto, Username */}
               <div className="w-fit h-fit flex justify-start items-center gap-2">
                 {/* Awal Foto Profil */}
-                <div className="w-10 h-10 relative overflow-hidden rounded-full">
+                <Link
+                  to={`/${dataPost?.postData.Author?.username}`}
+                  className="w-10 h-10 relative overflow-hidden rounded-full"
+                >
                   <img
                     src={dataPost?.postData?.Author?.avatar}
                     alt={`Foto Profil ${dataPost?.postData?.Author?.username}`}
                     className="absolute w-full h-full object-cover"
                   />
-                </div>
+                </Link>
                 {/* Akhir Foto Profil */}
 
                 {/* Awal Username dan Verified */}
                 <div className="w-fit h-fit flex gap-1 items-center">
                   {/* Awal Username */}
-                  <span className="font-semibold text-sm">
+                  <Link
+                    to={`/${dataPost?.postData.Author?.username}`}
+                    className="font-semibold text-sm hover:underline hover:text-blue-600"
+                  >
                     {dataPost?.postData?.Author?.username}
-                  </span>
+                  </Link>
                   {/* Akhir Username */}
                   {/* Awal Check Verfied */}
                   {dataPost?.postData?.Author?.isVerified && (
@@ -119,13 +161,16 @@ export default function PostModalFeed() {
               {/* Awal Caption */}
               <div className=" w-full h-fit py-2 flex justify-between items-start gap-2">
                 {/* Awal Foto Profil */}
-                <div className="w-10 h-10 flex justify-center items-center relative overflow-hidden rounded-full">
+                <Link
+                  to={`/${dataPost?.postData.Author?.username}`}
+                  className="w-10 h-10 flex justify-center items-center relative overflow-hidden rounded-full"
+                >
                   <img
                     src={dataPost?.postData?.Author?.avatar}
                     alt={`Foto Profil ${dataPost?.postData?.Author?.username}`}
                     className="w-full h-full absolute object-cover"
                   />
-                </div>
+                </Link>
                 {/* Akhir Foto Profil */}
 
                 {/* Awal Teks Caption */}
@@ -134,7 +179,12 @@ export default function PostModalFeed() {
                   <p className="leading-snug">
                     {/* Awal Username dan Verified */}
                     <span className="font-semibold inline-flex items-center gap-1 mr-1">
-                      {dataPost?.postData?.Author?.username}
+                      <Link
+                        to={`/${dataPost?.postData.Author?.username}`}
+                        className="hover:underline hover:text-blue-600"
+                      >
+                        {dataPost?.postData?.Author?.username}
+                      </Link>
                       {dataPost?.postData?.Author?.isVerified && (
                         <MdVerified className="text-blue-500 text-lg" />
                       )}
@@ -164,13 +214,16 @@ export default function PostModalFeed() {
                       className="w-full h-fit py-3 flex items-start gap-2 text-sm"
                     >
                       {/* Awal Foto Profil */}
-                      <div className="w-10 h-10 relative overflow-hidden rounded-full">
+                      <Link
+                        to={`/${comment.Author?.username}`}
+                        className="w-10 h-10 relative overflow-hidden rounded-full "
+                      >
                         <img
                           src={comment.Author?.avatar}
                           alt={`Foto Profil ${comment.Author?.username}`}
                           className="absolute w-full h-full object-cover"
                         />
-                      </div>
+                      </Link>
                       {/* Akhir Foto Profil */}
 
                       {/* Awal Teks Comment */}
@@ -179,7 +232,12 @@ export default function PostModalFeed() {
                         <p className="leading-snug">
                           {/* Awal Username dan Verified */}
                           <span className="font-semibold inline-flex items-center gap-1 mr-1">
-                            {comment.Author?.username}
+                            <Link
+                              className="hover:underline hover:text-blue-600"
+                              to={`/${comment.Author?.username}`}
+                            >
+                              {comment.Author?.username}
+                            </Link>
                             {comment.Author?.isVerified && (
                               <MdVerified className="text-blue-500 text-lg" />
                             )}
@@ -235,7 +293,13 @@ export default function PostModalFeed() {
                     {/* Akhir Icon Like */}
 
                     {/* Awal Icon Comment */}
-                    <FaRegComment className="text-2xl cursor-pointer hover:scale-105" />
+                    <button
+                      type="button"
+                      className="cursor-pointer hover:scale-105 transition-transform"
+                      onClick={handleFocusComment}
+                    >
+                      <FaRegComment className="text-2xl" />
+                    </button>
                     {/* Akhir Icon Comment */}
 
                     {/* Awal Icon Share */}
@@ -282,6 +346,7 @@ export default function PostModalFeed() {
 
                 {/* Awal Input Comment */}
                 <textarea
+                  ref={commentInputRef}
                   name="doComment"
                   id="doComment"
                   placeholder="Add a Comment ..."
@@ -295,10 +360,12 @@ export default function PostModalFeed() {
                 {/* Awal Button Kirim */}
                 <button
                   type="submit"
-                  disabled={loadingPost || doComment.trim() === ""}
+                  disabled={
+                    loadingPost || doComment.trim() === "" || loadingComment
+                  }
                   className={`font-semibold text-blue-800 ${loadingPost || doComment.trim() === "" ? "opacity-50 cursor-not-allowed" : "hover:underline cursor-pointer"} transition-transform`}
                 >
-                  Kirim
+                  {loadingComment ? "Loading..." : "Kirim"}
                 </button>
                 {/* Akhir Button Kirim */}
               </form>

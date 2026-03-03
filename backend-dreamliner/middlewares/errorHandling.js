@@ -7,7 +7,7 @@ function errorHandler(err, req, res, next) {
   switch (err.name) {
     case "SequelizeValidationError":
       statusCode = 400;
-      message = err.errors.map((el) => el.message[0]);
+      message = err.errors.map((el) => el.message);
       break;
 
     case "SequelizeUniqueConstraintError":
@@ -85,9 +85,14 @@ function errorHandler(err, req, res, next) {
       message = "Post ID is required.";
       break;
 
-    case "POST_ID_REQUIRED":
+    case "COMMENT_CONTENT_REQUIRED":
       statusCode = 400;
-      message = "Post ID is required.";
+      message = "Comment content is required.";
+      break;
+
+    case "POST_NOT_FOUND":
+      statusCode = 404;
+      message = "Post not found.";
       break;
 
     default:
