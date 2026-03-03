@@ -36,6 +36,28 @@ class PostRepository {
 
     return postData;
   }
+
+  static async findLike(PostId, UserId) {
+    // Panggil model Like untuk mengecek apakah user sudah like post ini atau belum
+    const likeData = await Like.findOne({
+      where: {
+        PostId,
+        UserId,
+      },
+    });
+
+    return likeData;
+  }
+
+  static async createLike(PostId, UserId) {
+    // Panggil model Like untuk membuat data like baru
+    const newLike = await Like.create({
+      PostId,
+      UserId,
+    });
+
+    return newLike;
+  }
 }
 module.exports = {
   PostRepository,

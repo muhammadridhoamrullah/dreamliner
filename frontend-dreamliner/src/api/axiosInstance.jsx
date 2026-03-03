@@ -23,6 +23,13 @@ export const privateAPI = axios.create({
 
 publicAPI.interceptors.request.use(
   (config) => {
+    const token = localStorage.access_token;
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      return config;
+    }
+
     return config;
   },
   (error) => {

@@ -2,22 +2,22 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { fetchPostById } from "../../../store/postSlice";
+import { fetchPostById, toggleLikePost } from "../../../store/postSlice";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import { MdVerified } from "react-icons/md";
 import { BsThreeDots } from "react-icons/bs";
+import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegComment } from "react-icons/fa6";
 import { PiPaperPlaneTiltBold } from "react-icons/pi";
 import { FaRegPaperPlane } from "react-icons/fa6";
 import { FaRegBookmark } from "react-icons/fa";
 import { FaRegFaceSmile } from "react-icons/fa6";
-import dayjs from "../../../utils/utilsDayjs";
 import { TiHeartOutline } from "react-icons/ti";
 import { TiHeartFullOutline } from "react-icons/ti";
+import { countLikes, getDayjs } from "../../../utils/functionHelpers";
 
 export default function PostModalFeed() {
-  const location = useLocation();
   const navigate = useNavigate();
   const { PostId } = useParams();
   const dispatch = useDispatch();
@@ -26,9 +26,12 @@ export default function PostModalFeed() {
     data: dataPost,
     error: errorPost,
   } = useSelector((state) => state.post);
-  console.log(dataPost, "dataPost");
-  const [comment, setComment] = useState("");
-  console.log(comment, "comment");
+  const { loadingLike, dataLike, errorLike } = useSelector(
+    (state) => state.post,
+  );
+  console.log(dataLike, "data Like");
+
+  const [doComment, setDoComment] = useState("");
 
   useEffect(() => {
     dispatch(fetchPostById(PostId));
@@ -39,11 +42,6 @@ export default function PostModalFeed() {
       toast.error(errorPost);
     }
   }, [errorPost]);
-
-  useEffect(() => {
-    console.log(location, "location PostDetail");
-    console.log(location.pathname, "location.pathname PostDetail");
-  }, [location.pathname]);
 
   useEffect(() => {
     // Lock scroll
@@ -57,31 +55,8 @@ export default function PostModalFeed() {
 
   async function submitCommentHandler(e) {
     e.preventDefault();
-    toast.success(comment);
+    toast.success(doComment);
   }
-
-  function countLikes(likesLength) {
-    if (likesLength < 1000) {
-      return likesLength.toString();
-    }
-
-    if (likesLength < 1000000) {
-      return (likesLength / 1000).toFixed(1).replace(".0", "") + "K";
-    }
-
-    if (likesLength < 1000000000) {
-      return (likesLength / 1000000).toFixed(1).replace(".0", "") + "M";
-    }
-
-    return (likesLength / 1000000000).toFixed(1).replace(".0", "") + "B";
-  }
-  const comments =
-    dataPost?.Comments?.length > 0
-      ? Array.from({ length: 20 }, (_, i) => ({
-          ...dataPost.Comments[0],
-          id: i + 1, // supaya key unik
-        }))
-      : [];
 
   return (
     <div className="bg-black/5 w-full h-screen flex justify-between items-start">
@@ -91,10 +66,8 @@ export default function PostModalFeed() {
           {/* Awal Foto */}
           <div className="bg-pink-600 w-[47%] h-full relative">
             <img
-              src={
-                "https://rare-gallery.com/uploads/posts/327850-TWICE-Jihyo-Feel-Special-8K-iphone-wallpaper.jpg"
-              }
-              alt={`Foto Post Id ${dataPost?.id}`}
+              src={dataPost?.postData?.imageUrl}
+              alt={`Foto Post Id ${dataPost?.postData?.id}`}
               className="absolute w-full h-full object-cover"
             />
           </div>
@@ -109,8 +82,8 @@ export default function PostModalFeed() {
                 {/* Awal Foto Profil */}
                 <div className="w-10 h-10 relative overflow-hidden rounded-full">
                   <img
-                    src={dataPost?.Author?.avatar}
-                    alt={`Foto Profil ${dataPost?.Author?.username}`}
+                    src={dataPost?.postData?.Author?.avatar}
+                    alt={`Foto Profil ${dataPost?.postData?.Author?.username}`}
                     className="absolute w-full h-full object-cover"
                   />
                 </div>
@@ -120,11 +93,11 @@ export default function PostModalFeed() {
                 <div className="w-fit h-fit flex gap-1 items-center">
                   {/* Awal Username */}
                   <span className="font-semibold text-sm">
-                    {dataPost?.Author?.username}
+                    {dataPost?.postData?.Author?.username}
                   </span>
                   {/* Akhir Username */}
                   {/* Awal Check Verfied */}
-                  {dataPost?.Author?.isVerified && (
+                  {dataPost?.postData?.Author?.isVerified && (
                     <MdVerified className="text-blue-500 text-lg" />
                   )}
                   {/* Akhir Check Verfied */}
@@ -148,8 +121,8 @@ export default function PostModalFeed() {
                 {/* Awal Foto Profil */}
                 <div className="w-10 h-10 flex justify-center items-center relative overflow-hidden rounded-full">
                   <img
-                    src={dataPost?.Author?.avatar}
-                    alt={`Foto Profil ${dataPost?.Author?.username}`}
+                    src={dataPost?.postData?.Author?.avatar}
+                    alt={`Foto Profil ${dataPost?.postData?.Author?.username}`}
                     className="w-full h-full absolute object-cover"
                   />
                 </div>
@@ -161,19 +134,19 @@ export default function PostModalFeed() {
                   <p className="leading-snug">
                     {/* Awal Username dan Verified */}
                     <span className="font-semibold inline-flex items-center gap-1 mr-1">
-                      {dataPost?.Author?.username}
-                      {dataPost?.Author?.isVerified && (
+                      {dataPost?.postData?.Author?.username}
+                      {dataPost?.postData?.Author?.isVerified && (
                         <MdVerified className="text-blue-500 text-lg" />
                       )}
                     </span>
-                    {dataPost?.caption}
+                    {dataPost?.postData?.caption}
                     {/* Akhir Username dan Verified */}
                   </p>
                   {/* Akhir Username dan Caption */}
 
                   {/* Awal CreatedAt */}
                   <span className="text-xs text-gray-500">
-                    {dayjs(dataPost?.createdAt).fromNow()}
+                    {getDayjs(dataPost?.postData?.createdAt)}
                   </span>
                   {/* Akhir CreatedAt */}
                 </div>
@@ -184,17 +157,17 @@ export default function PostModalFeed() {
               {/* Awal Mapping Comment */}
 
               <div className=" flex-1 overflow-y-auto pr-1 w-full">
-                {dataPost?.Comments?.map((comment) => {
+                {dataPost?.postData?.Comments?.map((comment) => {
                   return (
                     <div
                       key={comment.id}
-                      className="w-full h-fit py-2 flex items-start gap-2 text-sm"
+                      className="w-full h-fit py-3 flex items-start gap-2 text-sm"
                     >
                       {/* Awal Foto Profil */}
                       <div className="w-10 h-10 relative overflow-hidden rounded-full">
                         <img
-                          src={comment.Author.avatar}
-                          alt={`Foto Profil ${comment.Author.username}`}
+                          src={comment.Author?.avatar}
+                          alt={`Foto Profil ${comment.Author?.username}`}
                           className="absolute w-full h-full object-cover"
                         />
                       </div>
@@ -206,8 +179,8 @@ export default function PostModalFeed() {
                         <p className="leading-snug">
                           {/* Awal Username dan Verified */}
                           <span className="font-semibold inline-flex items-center gap-1 mr-1">
-                            {comment.Author.username}
-                            {comment.Author.isVerified && (
+                            {comment.Author?.username}
+                            {comment.Author?.isVerified && (
                               <MdVerified className="text-blue-500 text-lg" />
                             )}
                           </span>
@@ -218,7 +191,7 @@ export default function PostModalFeed() {
 
                         {/* Awal Jam Comment */}
                         <span className="text-xs text-gray-500">
-                          {dayjs(comment.createdAt).fromNow()}
+                          {getDayjs(comment.createdAt)}
                         </span>
                         {/* Akhir Jam Comment */}
                       </div>
@@ -244,9 +217,30 @@ export default function PostModalFeed() {
                 <div className="flex-1 w-full h-fit flex justify-between items-start">
                   {/* Awal Icon Like, Comment, dan Share */}
                   <div className="flex gap-4">
-                    <FaRegHeart className="text-2xl cursor-pointer hover:scale-105" />
+                    {/* Awal Icon Like */}
+
+                    <button
+                      type="button"
+                      disabled={loadingLike}
+                      onClick={() => dispatch(toggleLikePost(PostId))}
+                      className={`${loadingLike ? "cursor-not-allowed opacity-50" : "cursor-pointer"} transition-transform hover:scale-110`}
+                    >
+                      {dataPost?.isLikeByUserId ? (
+                        <FaHeart className="text-red-500 text-2xl " />
+                      ) : (
+                        <FaRegHeart className=" text-2xl " />
+                      )}
+                    </button>
+
+                    {/* Akhir Icon Like */}
+
+                    {/* Awal Icon Comment */}
                     <FaRegComment className="text-2xl cursor-pointer hover:scale-105" />
+                    {/* Akhir Icon Comment */}
+
+                    {/* Awal Icon Share */}
                     <FaRegPaperPlane className="text-2xl cursor-pointer hover:scale-105" />
+                    {/* Akhir Icon Share */}
                   </div>
                   {/* Akhir Icon Like, Comment, dan Share */}
 
@@ -261,13 +255,13 @@ export default function PostModalFeed() {
                 <div className=" flex-1 w-full flex flex-col justify-start items-start text-sm">
                   {/* Awal Jumlah Like */}
                   <span className="font-semibold">
-                    {countLikes(dataPost?.Likes.length)} likes
+                    {countLikes(dataPost?.postData?.Likes.length)} likes
                   </span>
                   {/* Akhir Jumlah Like */}
 
                   {/* Awal Waktu Upload */}
                   <span className="text-xs text-gray-500">
-                    {dayjs(dataPost?.createdAt).fromNow()}
+                    {getDayjs(dataPost?.postData?.createdAt)}
                   </span>
                   {/* Akhir Waktu Upload */}
                 </div>
@@ -288,12 +282,12 @@ export default function PostModalFeed() {
 
                 {/* Awal Input Comment */}
                 <textarea
-                  name="comment"
-                  id="comment"
+                  name="doComment"
+                  id="doComment"
                   placeholder="Add a Comment ..."
                   rows={1}
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
+                  value={doComment}
+                  onChange={(e) => setDoComment(e.target.value)}
                   className="flex-1 resize-none outline-none overflow-y-auto"
                 />
                 {/* Akhir Input Comment */}
@@ -301,8 +295,8 @@ export default function PostModalFeed() {
                 {/* Awal Button Kirim */}
                 <button
                   type="submit"
-                  disabled={loadingPost || comment.trim() === ""}
-                  className={`font-semibold text-blue-800 ${loadingPost || comment.trim() === "" ? "opacity-50 cursor-not-allowed" : "hover:underline cursor-pointer"} transition-transform`}
+                  disabled={loadingPost || doComment.trim() === ""}
+                  className={`font-semibold text-blue-800 ${loadingPost || doComment.trim() === "" ? "opacity-50 cursor-not-allowed" : "hover:underline cursor-pointer"} transition-transform`}
                 >
                   Kirim
                 </button>
@@ -371,4 +365,91 @@ export default function PostModalFeed() {
 //             "deletedAt": null
 //         }
 //     ]
+// }
+
+// {
+//     "postData": {
+//         "id": 9,
+//         "UserId": 5,
+//         "imageUrl": "https://picsum.photos/600/600?random=9",
+//         "caption": "Morning workout routine 💪 #fitness #workout",
+//         "createdAt": "2026-02-06T08:40:13.912Z",
+//         "updatedAt": "2026-02-06T08:40:13.912Z",
+//         "deletedAt": null,
+//         "Author": {
+//             "id": 5,
+//             "username": "ridho",
+//             "avatar": "https://i.pravatar.cc/150?img=5",
+//             "isVerified": true
+//         },
+//         "Comments": [
+//             {
+//                 "id": 10,
+//                 "PostId": 9,
+//                 "UserId": 3,
+//                 "content": "Inspiring! 💪",
+//                 "createdAt": "2026-02-06T08:40:14.006Z",
+//                 "updatedAt": "2026-02-06T08:40:14.006Z",
+//                 "deletedAt": null,
+//                 "Author": {
+//                     "id": 3,
+//                     "username": "charlie_dev",
+//                     "avatar": "https://i.pravatar.cc/150?img=3",
+//                     "isVerified": true,
+//                     "createdAt": "2026-02-06T08:40:13.077Z"
+//                 }
+//             },
+//             {
+//                 "id": 11,
+//                 "PostId": 9,
+//                 "UserId": 4,
+//                 "content": "What's your routine?",
+//                 "createdAt": "2026-02-06T08:40:14.006Z",
+//                 "updatedAt": "2026-02-06T08:40:14.006Z",
+//                 "deletedAt": null,
+//                 "Author": {
+//                     "id": 4,
+//                     "username": "diana_art",
+//                     "avatar": "https://i.pravatar.cc/150?img=4",
+//                     "isVerified": false,
+//                     "createdAt": "2026-02-06T08:40:13.077Z"
+//                 }
+//             }
+//         ],
+//         "Likes": [
+//             {
+//                 "id": 18,
+//                 "PostId": 9,
+//                 "UserId": 2,
+//                 "createdAt": "2026-02-06T08:40:13.947Z",
+//                 "updatedAt": "2026-02-06T08:40:13.947Z",
+//                 "deletedAt": null
+//             },
+//             {
+//                 "id": 19,
+//                 "PostId": 9,
+//                 "UserId": 3,
+//                 "createdAt": "2026-02-06T08:40:13.947Z",
+//                 "updatedAt": "2026-02-06T08:40:13.947Z",
+//                 "deletedAt": null
+//             },
+//             {
+//                 "id": 20,
+//                 "PostId": 9,
+//                 "UserId": 4,
+//                 "createdAt": "2026-02-06T08:40:13.947Z",
+//                 "updatedAt": "2026-02-06T08:40:13.947Z",
+//                 "deletedAt": null
+//             },
+//             {
+//                 "id": 22,
+//                 "PostId": 9,
+//                 "UserId": 13,
+//                 "createdAt": "2026-03-03T06:31:47.087Z",
+//                 "updatedAt": "2026-03-03T06:31:47.087Z",
+//                 "deletedAt": null
+//             }
+//         ]
+//     },
+//     "isLikeByUserId": false
 // }

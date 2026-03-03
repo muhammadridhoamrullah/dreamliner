@@ -6,12 +6,6 @@ import { Link, useLocation } from "react-router-dom";
 export default function ProfileFeeds({ data }) {
   const location = useLocation();
 
-  useEffect(() => {
-    console.log(location, "Location aja ProfileFeeds");
-
-    console.log(location.pathname, "lcoation.pathname ProfileFeeds");
-  }, [location.pathname]);
-
   return (
     <div className="w-full  grid grid-cols-3 gap-1">
       {data?.map((post, idx) => {

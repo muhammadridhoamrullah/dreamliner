@@ -85,6 +85,11 @@ function errorHandler(err, req, res, next) {
       message = "Post ID is required.";
       break;
 
+    case "POST_ID_REQUIRED":
+      statusCode = 400;
+      message = "Post ID is required.";
+      break;
+
     default:
       break;
   }

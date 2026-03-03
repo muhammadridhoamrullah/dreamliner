@@ -32,8 +32,48 @@ async function authentication(req, res, next) {
   }
 }
 
+async function optionalAuthentication(req, res, next) {
+  try {
+    console.log("JALAN OPTION");
+
+    const { authorization } = req.headers;
+    console.log(authorization, "author option");
+
+    if (!authorization) {
+      req.user = null;
+      return next();
+    }
+
+    const token = authorization.split(" ")[1];
+    console.log(token, "token option");
+
+    const payload = verifyToken(token);
+    console.log(payload, "payload option");
+
+    let user = await User.findByPk(payload.id);
+    console.log(user, "user option");
+
+    if (!user) {
+      req.user = null;
+      return next();
+    }
+
+    req.user = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      username: user.username,
+    };
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   authentication,
+  optionalAuthentication,
 };
 
 // UNAUTHORIZED

@@ -5,8 +5,6 @@ import PostModalFeed from "../../common/post/PostModalFeed";
 export default function ProfileLayout() {
   const location = useLocation();
   const backgroundLocation = location.state?.backgroundLocation;
-  console.log(location, "location lay");
-  console.log(backgroundLocation, "backgr lay");
 
   return (
     <>
