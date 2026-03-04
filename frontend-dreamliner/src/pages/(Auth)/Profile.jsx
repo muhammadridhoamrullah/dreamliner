@@ -13,8 +13,14 @@ import { MdSmartDisplay } from "react-icons/md";
 import { MdOutlineSmartDisplay } from "react-icons/md";
 import { BiSolidUserPin } from "react-icons/bi";
 import { BiUserPin } from "react-icons/bi";
+import { BsGearWide } from "react-icons/bs";
 import ProfileFeeds from "../../components/common/profile/ProfileFeeds";
 import { BsCamera } from "react-icons/bs";
+import {
+  countFollowersAndFollowing,
+  countPosts,
+} from "../../utils/functionHelpers";
+import LoadingSkeleton from "../../components/common/LoadingSkeleton";
 
 export default function Profile() {
   // State untuk menyimpan data user
@@ -25,9 +31,13 @@ export default function Profile() {
     error: eUser,
     data: dUser,
   } = useSelector((state) => state.user);
+  console.log(lUser, "lUser");
 
   // state untuk active tab
   const [activeTab, setActiveTab] = useState("posts");
+
+  // variabel untuk cek apakah user yang sedang login sama dengan user yang sedang dilihat
+  const isMe = dUser?.isMine;
 
   // useEffect untuk mendapatkan data user berdasarkan username
   useEffect(() => {
@@ -43,7 +53,6 @@ export default function Profile() {
     }
   }, [eUser]);
 
-  // Function untuk Bio
   function formatBio(bio) {
     const parts = bio.split(/(@[\w.]+)/g); // Split berdasarkan @username
 
@@ -64,21 +73,8 @@ export default function Profile() {
     });
   }
 
-  // Function jumlah post
-  function countPosts(posts) {
-    return posts.length;
-  }
-
-  // Function hitung jumlah followers
-  function countFollowersAndFollowing(followLength) {
-    if (followLength < 1000) {
-      return followLength.toString();
-    } else if (followLength < 1000000) {
-      return Math.floor(followLength / 1000) + "K";
-    } else {
-      const millions = (followLength / 1000000).toFixed(1);
-      return `${parseFloat(millions)} M`;
-    }
+  if (lUser) {
+    return <LoadingSkeleton />;
   }
 
   return (
@@ -114,7 +110,21 @@ export default function Profile() {
                 {/* Akhir isVerified? */}
 
                 {/* Awal Titik Tiga */}
-                <BsThreeDots className="text-sm" />
+                {isMe ? (
+                  <button
+                    className="cursor-pointer"
+                    onClick={() => toast.success("Settings")}
+                  >
+                    <BsGearWide className="text-sm" />
+                  </button>
+                ) : (
+                  <button
+                    className="cursor-pointer"
+                    onClick={() => toast.success("Three Dots")}
+                  >
+                    <BsThreeDots className="text-sm" />
+                  </button>
+                )}
 
                 {/* Akhir Titik Tiga */}
               </div>
@@ -179,21 +189,41 @@ export default function Profile() {
           </div>
           {/* Akhir Foto Profile dan Data Diri */}
 
-          {/* Awal Button Follow */}
-          <div className="w-full h-fit flex justify-center items-center gap-2">
-            {/* Awal Button Follow */}
-            <button className="text-white font-medium text-sm bg-blue-600 hover:bg-blue-900 w-[92%] h-12  text-center rounded-xl cursor-pointer">
-              Follow
-            </button>
-            {/* Akhir Button Follow */}
+          {/* Awal Button Follow / Edit Profile */}
 
-            {/* Awal Akun Serupa */}
-            <div className="bg-gray-300 hover:bg-gray-400 w-[8%] h-12 flex justify-center items-center rounded-xl">
-              <TbUsersPlus className=" text-lg" />
-            </div>
-            {/* Akhir Akun Serupa */}
+          <div className="w-full h-fit flex justify-center items-center gap-2 font-medium text-sm">
+            {isMe ? (
+              <>
+                {/* Awal Button Edit Profile */}
+                <button className="bg-gray-200 hover:bg-gray-300 cursor-pointer w-full h-12 rounded-xl">
+                  Edit Profile
+                </button>
+                {/* Akhir Button Edit Profile */}
+
+                {/* Awal Button Lihat Arsip */}
+                <button className="bg-gray-200 hover:bg-gray-300 cursor-pointer w-full h-12 rounded-xl">
+                  Lihat Arsip
+                </button>
+                {/* Akhir Button Lihat Arsip */}
+              </>
+            ) : (
+              <>
+                {/* Awal Button Follow */}
+                <button className="text-white  bg-blue-600 hover:bg-blue-900 w-[92%] h-12 rounded-xl cursor-pointer">
+                  Follow
+                </button>
+                {/* Akhir Button Follow */}
+
+                {/* Awal Akun Serupa */}
+                <div className="bg-gray-300 hover:bg-gray-400 w-[8%] h-12 flex justify-center items-center rounded-xl">
+                  <TbUsersPlus className=" text-lg" />
+                </div>
+                {/* Akhir Akun Serupa */}
+              </>
+            )}
           </div>
-          {/* Akhir Button Follow */}
+
+          {/* Akhir Button Follow / Edit Profile */}
         </div>
         {/* Akhir Data User */}
 

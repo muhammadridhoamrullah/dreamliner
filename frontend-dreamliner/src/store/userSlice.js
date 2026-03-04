@@ -35,6 +35,7 @@ export function fetchUserByUsername(username) {
 
       //   Panggil API untuk mendapatkan data user berdasarkan username
       const response = await publicAPI.get(`/users/find/${username}`);
+      console.log(response, "res user");
 
       dispatch(findByUsernameSuccess(response.data.data));
     } catch (error) {
@@ -44,7 +45,5 @@ export function fetchUserByUsername(username) {
     }
   };
 }
-
-
 
 export default userSlice.reducer;

@@ -21,13 +21,20 @@ class UserController {
   static async findByUsername(req, res, next) {
     try {
       const { username } = req.params;
+      const UserId = req.user?.id || null;
+      console.log(UserId, "USER ID CONTROL");
 
       //   Panggil service untuk mendapatkan data user berdasarkan username
       const userData = await UserService.findByUsername(username);
 
+      const newData = {
+        ...userData.toJSON(),
+        isMine: UserId === userData.id,
+      };
+
       res.status(200).json({
         success: true,
-        data: userData,
+        data: newData,
         message: "Get user by username success",
       });
     } catch (error) {

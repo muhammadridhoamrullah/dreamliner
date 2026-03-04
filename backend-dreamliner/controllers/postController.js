@@ -12,7 +12,6 @@ class PostController {
 
       //   Panggil service untuk mendapatkan data post berdasarkan id
       const postData = await PostService.findPostById(PostId, UserId);
-      console.log(postData, "postData controller");
 
       res.status(200).json({
         success: true,
