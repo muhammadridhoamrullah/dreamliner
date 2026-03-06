@@ -13,6 +13,7 @@ userRouter.get(
 );
 userRouter.use(authentication);
 userRouter.get("/me", UserController.getMyProfile);
+userRouter.post("/follow/:username", UserController.followUser);
 
 module.exports = {
   userRouter,

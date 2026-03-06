@@ -95,6 +95,11 @@ function errorHandler(err, req, res, next) {
       message = "Post not found.";
       break;
 
+    case "USERNAME_IS_REQUIRED":
+      statusCode = 400;
+      message = "Username is required.";
+      break;
+
     default:
       break;
   }

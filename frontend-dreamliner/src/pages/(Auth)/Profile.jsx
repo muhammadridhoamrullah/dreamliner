@@ -1,12 +1,22 @@
 import { TbUsersPlus } from "react-icons/tb";
 import { MdVerified } from "react-icons/md";
 import { BsThreeDots } from "react-icons/bs";
-import { Link, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import {
+  Link,
+  useLoaderData,
+  useParams,
+  useRevalidator,
+} from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { publicAPI } from "../../api/axiosInstance";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserByUsername } from "../../store/userSlice";
+import {
+  fetchUserByUsername,
+  followUser,
+  followUserReset,
+  userLogin,
+} from "../../store/userSlice";
 import { PiDotsNineFill } from "react-icons/pi";
 import { PiDotsNineBold } from "react-icons/pi";
 import { MdSmartDisplay } from "react-icons/md";
@@ -14,6 +24,7 @@ import { MdOutlineSmartDisplay } from "react-icons/md";
 import { BiSolidUserPin } from "react-icons/bi";
 import { BiUserPin } from "react-icons/bi";
 import { BsGearWide } from "react-icons/bs";
+import { AiOutlineLoading } from "react-icons/ai";
 import ProfileFeeds from "../../components/common/profile/ProfileFeeds";
 import { BsCamera } from "react-icons/bs";
 import {
@@ -21,37 +32,70 @@ import {
   countPosts,
 } from "../../utils/functionHelpers";
 import LoadingSkeleton from "../../components/common/LoadingSkeleton";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+import AvatarPreview from "../../components/common/AvatarPreview";
 
 export default function Profile() {
+  const dataFindUser = useLoaderData();
+  console.log(dataFindUser, "dataFromLoader");
+  const { revalidate } = useRevalidator();
+
   // State untuk menyimpan data user
   const { username } = useParams();
   const dispatch = useDispatch();
-  const {
-    loading: lUser,
-    error: eUser,
-    data: dUser,
-  } = useSelector((state) => state.user);
-  console.log(lUser, "lUser");
+
+  // const { loadingFindUser, errorFindUser, dataFindUser } = useSelector(
+  //   (state) => state.user,
+  // );
+
+  const { loadingFollowUser, errorFollowUser, dataFollowUser } = useSelector(
+    (state) => state.user,
+  );
+  console.log(dataFollowUser, "dataFollowUser");
+
+  const { dataUserLogin, loadingUserLogin, errorUserLogin } = useSelector(
+    (state) => state.user,
+  );
+
+  console.log(dataUserLogin, "dataUserLogin di Profile");
 
   // state untuk active tab
   const [activeTab, setActiveTab] = useState("posts");
 
   // variabel untuk cek apakah user yang sedang login sama dengan user yang sedang dilihat
-  const isMe = dUser?.isMine;
+  const isMe = dataFindUser?.isMine;
 
   // useEffect untuk mendapatkan data user berdasarkan username
-  useEffect(() => {
-    if (username) {
-      dispatch(fetchUserByUsername(username));
-    }
-  }, [dispatch, username]);
+  // useEffect(() => {
+  //   if (username && (!dataFindUser || dataFindUser.username !== username)) {
+  //     dispatch(fetchUserByUsername(username));
+  //   }
+  // }, [dispatch, username, dataFindUser]);
 
   // useEffect untuk menampilkan error jika terjadi error saat mendapatkan data user
+  // useEffect(() => {
+  //   if (errorFindUser) {
+  //     toast.error(errorFindUser);
+  //   }
+  // }, [errorFindUser]);
+
+  // useEffect untuk menampilkan error jika terjadi error saat follow/unfollow user
   useEffect(() => {
-    if (eUser) {
-      toast.error(eUser);
+    if (errorFollowUser) {
+      toast.error(errorFollowUser);
     }
-  }, [eUser]);
+  }, [errorFollowUser]);
+
+  // useEffect untuk menampilkan pesan sukses saat follow/unfollow user
+  useEffect(() => {
+    if (dataFollowUser) {
+      toast.success(dataFollowUser.message);
+
+      revalidate();
+      dispatch(followUserReset());
+    }
+  }, [dataFollowUser]);
 
   function formatBio(bio) {
     const parts = bio.split(/(@[\w.]+)/g); // Split berdasarkan @username
@@ -73,9 +117,35 @@ export default function Profile() {
     });
   }
 
-  if (lUser) {
-    return <LoadingSkeleton />;
-  }
+  // Function untuk cek apakah belum follow, sudah follow, atau belum follback
+  const followStatus = useMemo(() => {
+    if (!dataUserLogin) {
+      return "Follow";
+    }
+
+    // Am I following this person?
+    const isFollowing = dataFindUser?.Followers?.some(
+      (follower) => follower?.id === dataUserLogin?.id,
+    );
+
+    // Is this person following me?
+    const isFollowedBy = dataFindUser?.Followings?.some(
+      (following) => following?.id === dataUserLogin?.id,
+    );
+
+    if (isFollowing && isFollowedBy) {
+      return "Following"; // Mutual
+    } else if (isFollowing) {
+      return "Following";
+    } else if (isFollowedBy) {
+      return "Follow Back";
+    } else {
+      return "Follow";
+    }
+  }, [dataFindUser, dataUserLogin]);
+
+  const isFollowing = followStatus === "Following";
+  console.log(isFollowing, "isFollowing");
 
   return (
     <div className="bg-white w-full min-h-screen flex justify-center items-start py-6">
@@ -87,10 +157,9 @@ export default function Profile() {
           <div className="w-full h-fit flex justify-start items-start gap-4">
             {/* Awal Foto Profile */}
             <div className="relative w-36 h-36 rounded-full overflow-hidden shrink-0">
-              <img
-                src={dUser?.avatar || `assets/images/defaultAvatar.png`}
-                alt="Foto Profil"
-                className="absolute w-full h-full object-cover "
+              <AvatarPreview
+                src={dataFindUser?.avatar || "assets/images/defaultAvatar.png"}
+                className="w-full h-full object-cover "
               />
             </div>
             {/* Akhir Foto Profile */}
@@ -100,11 +169,13 @@ export default function Profile() {
               {/* Awal Username */}
               <div className="w-full h-fit flex justify-start items-center gap-2">
                 {/* Awal Username */}
-                <span className="font-bold text-2xl">{dUser?.username}</span>
+                <span className="font-bold text-2xl">
+                  {dataFindUser?.username}
+                </span>
                 {/* Akhir Username */}
 
                 {/* Awal isVerified? */}
-                {dUser?.isVerified && (
+                {dataFindUser?.isVerified && (
                   <MdVerified className="text-blue-500 text-xl" />
                 )}
                 {/* Akhir isVerified? */}
@@ -131,7 +202,7 @@ export default function Profile() {
               {/* Akhir Username */}
 
               {/* Awal Full Name */}
-              <span>{dUser?.fullName}</span>
+              <span>{dataFindUser?.fullName}</span>
               {/* Akhir Full Name */}
               {/* Awal Post, Follower, and Following */}
               <div className="w-full h-fit text-sm flex justify-start items-center gap-3">
@@ -139,7 +210,7 @@ export default function Profile() {
                 <div className="sw-fit h-fit flex justify-start items-center gap-1">
                   {/* Awal Jumlah Post */}
                   <span className="font-semibold">
-                    {countPosts(dUser?.Posts || [])}
+                    {countPosts(dataFindUser?.Posts || [])}
                   </span>
                   {/* Akhir Jumlah Post */}
 
@@ -153,7 +224,7 @@ export default function Profile() {
                 <div className="w-fit h-fit flex justify-start items-center gap-1">
                   {/* Awal Jumlah Followe */}
                   <span className="font-semibold">
-                    {countFollowersAndFollowing(dUser?.Followers.length)}
+                    {countFollowersAndFollowing(dataFindUser?.Followers.length)}
                   </span>
                   {/* Akhir Jumlah Followe */}
 
@@ -167,7 +238,9 @@ export default function Profile() {
                 <div className="w-fit h-fit flex justify-start items-center gap-1">
                   {/* Awal Jumlah Following */}
                   <span className="font-semibold">
-                    {countFollowersAndFollowing(dUser?.Followings.length)}
+                    {countFollowersAndFollowing(
+                      dataFindUser?.Followings.length,
+                    )}
                   </span>
                   {/* Akhir Jumlah Following */}
 
@@ -181,7 +254,7 @@ export default function Profile() {
 
               {/* Awal Bio */}
               <div className="w-full h-fit text-sm leading-relaxed whitespace-pre-line">
-                {formatBio(dUser?.bio || "")}
+                {formatBio(dataFindUser?.bio || "")}
               </div>
               {/* Akhir Bio */}
             </div>
@@ -195,13 +268,13 @@ export default function Profile() {
             {isMe ? (
               <>
                 {/* Awal Button Edit Profile */}
-                <button className="bg-gray-200 hover:bg-gray-300 cursor-pointer w-full h-12 rounded-xl">
+                <button className="bg-gray-300 hover:bg-gray-400 cursor-pointer w-full h-12 rounded-xl">
                   Edit Profile
                 </button>
                 {/* Akhir Button Edit Profile */}
 
                 {/* Awal Button Lihat Arsip */}
-                <button className="bg-gray-200 hover:bg-gray-300 cursor-pointer w-full h-12 rounded-xl">
+                <button className="bg-gray-300 hover:bg-gray-400 cursor-pointer w-full h-12 rounded-xl">
                   Lihat Arsip
                 </button>
                 {/* Akhir Button Lihat Arsip */}
@@ -209,8 +282,19 @@ export default function Profile() {
             ) : (
               <>
                 {/* Awal Button Follow */}
-                <button className="text-white  bg-blue-600 hover:bg-blue-900 w-[92%] h-12 rounded-xl cursor-pointer">
-                  Follow
+                <button
+                  disabled={loadingFollowUser}
+                  onClick={() => dispatch(followUser(dataFindUser?.username))}
+                  className={`   w-[92%] h-12 rounded-xl cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-500 ease-in-out ${isFollowing ? "bg-gray-300 hover:bg-gray-400 text-black" : "bg-blue-600 hover:bg-blue-900 text-white"} `}
+                >
+                  {loadingFollowUser ? (
+                    <AiOutlineLoading
+                      size={20}
+                      className="animate-spin mx-auto"
+                    />
+                  ) : (
+                    followStatus
+                  )}
                 </button>
                 {/* Akhir Button Follow */}
 
@@ -228,7 +312,7 @@ export default function Profile() {
         {/* Akhir Data User */}
 
         {/* Awal Feed */}
-        {dUser?.Posts.length === 0 ? (
+        {dataFindUser?.Posts.length === 0 ? (
           <div className="w-full h-52 flex flex-col gap-2 justify-center items-center">
             {/* Awal Icon Camera */}
             <BsCamera size={100} />
@@ -242,7 +326,7 @@ export default function Profile() {
           <div className="w-full h-fit flex flex-col justify-start items-start">
             {/* Awal Render Icon Feed, Reels, and Tags */}
             <div className="w-full h-10 flex justify-around items-center">
-              {dUser?.Posts.length > 0 && (
+              {dataFindUser?.Posts.length > 0 && (
                 <button
                   className={`flex-1 flex justify-center items-center border-b-2 cursor-pointer transition-all duration-300 ${activeTab === "posts" ? " border-black" : "border-transparent hover:border-gray-300"}`}
                 >
@@ -253,34 +337,14 @@ export default function Profile() {
                   )}
                 </button>
               )}
-              {/* {reels.length > 0 && (
-              <button
-                className={`flex-1 flex justify-center items-center border-b-2 cursor-pointer transition-all duration-300   ${activeTab === "reels" ? " border-black" : "border-transparent hover:border-gray-300"}`}
-              >
-                {activeTab === "reels" ? (
-                  <MdSmartDisplay size={30} />
-                ) : (
-                  <MdOutlineSmartDisplay size={30} />
-                )}
-              </button>
-            )}
-            {tags.length > 0 && (
-              <button
-                className={`flex-1 flex justify-center items-center border-b-2 cursor-pointer transition-all duration-300 ${activeTab === "tags" ? "border-black" : "border-transparent hover:border-gray-300"}`}
-              >
-                {activeTab === "tags" ? (
-                  <BiSolidUserPin size={30} />
-                ) : (
-                  <BiUserPin size={30} />
-                )}
-              </button>
-            )} */}
             </div>
             {/* Akhir Render Icon Feed, Reels, and Tags */}
 
             {/* Awal Render Sesuai Menu */}
             <div className="w-full h-fit overflow-hidden rounded-md">
-              {activeTab === "posts" && <ProfileFeeds data={dUser?.Posts} />}
+              {activeTab === "posts" && (
+                <ProfileFeeds data={dataFindUser?.Posts} />
+              )}
             </div>
 
             {/* Akhir Render Sesuai Menu */}
@@ -426,4 +490,14 @@ export default function Profile() {
 //             "deletedAt": null
 //         }
 //     ]
+// }
+
+// dataFollowUser
+// {
+//     "success": true,
+//     "data": {
+//         "isFollowing": true,
+//         "message": "Follow user success"
+//     },
+//     "message": "You are now following ridho"
 // }

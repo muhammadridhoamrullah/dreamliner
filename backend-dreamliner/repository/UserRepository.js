@@ -44,11 +44,13 @@ class UserRepository {
         {
           model: User,
           as: "Followers",
+          attributes: ["id", "username", "avatar", "isVerified"],
           through: { attributes: [] },
         },
         {
           model: User,
           as: "Followings",
+          attributes: ["id", "username", "avatar", "isVerified"],
           through: { attributes: [] },
         },
         {
@@ -56,6 +58,17 @@ class UserRepository {
           as: "Notifications",
         },
       ],
+    });
+  }
+
+  static async findByUsernameOnly(username) {
+    return await User.findOne({
+      where: {
+        username,
+      },
+      attributes: {
+        exclude: ["password", "updatedAt"],
+      },
     });
   }
 
@@ -79,6 +92,33 @@ class UserRepository {
       attributes: {
         exclude: ["password", "updatedAt"],
       },
+    });
+  }
+
+  static async isFollowing(followerId, followingId) {
+    const follow = await Follow.findOne({
+      where: {
+        FollowerId: followerId,
+        FollowingId: followingId,
+      },
+    });
+
+    return !!follow; // Mengembalikan true jika follow ditemukan, false jika tidak
+  }
+
+  static async unfollowUser(followerId, followingId) {
+    return await Follow.destroy({
+      where: {
+        FollowerId: followerId,
+        FollowingId: followingId,
+      },
+    });
+  }
+
+  static async followUser(followerId, followingId) {
+    return await Follow.create({
+      FollowerId: followerId,
+      FollowingId: followingId,
     });
   }
 }

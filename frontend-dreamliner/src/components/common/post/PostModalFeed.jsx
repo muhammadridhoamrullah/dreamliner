@@ -14,6 +14,7 @@ import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegComment } from "react-icons/fa6";
 import { PiPaperPlaneTiltBold } from "react-icons/pi";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FaRegPaperPlane } from "react-icons/fa6";
 import { FaRegBookmark } from "react-icons/fa";
 import { FaRegFaceSmile } from "react-icons/fa6";
@@ -100,279 +101,291 @@ export default function PostModalFeed() {
       <div className=" w-[95%] h-full flex justify-center items-center">
         <div className=" w-220 h-135 flex justify-between items-start rounded-md overflow-hidden">
           {/* Awal Foto */}
-          <div className="bg-pink-600 w-[47%] h-full relative">
-            <img
-              src={dataPost?.postData?.imageUrl}
-              alt={`Foto Post Id ${dataPost?.postData?.id}`}
-              className="absolute w-full h-full object-cover"
-            />
+          <div className="w-[47%] h-full relative">
+            {loadingPost ? (
+              <div className="absolute w-full h-full flex justify-center items-center bg-black/50">
+                <AiOutlineLoading3Quarters className="text-4xl text-white animate-spin" />
+              </div>
+            ) : (
+              <img
+                src={dataPost?.postData?.imageUrl}
+                alt={`Foto Post Id ${dataPost?.postData?.id}`}
+                className="absolute w-full h-full object-cover"
+              />
+            )}
           </div>
           {/* Akhir Foto */}
           {/* Awal Caption, Like, & Comment */}
           {/* Disini pb-2 */}
-          <div className="bg-white w-[53%] h-full flex flex-col justify-start items-start  ">
-            {/* Awal Profil */}
-            <div className="w-full h-[12%] flex justify-between items-center border-b px-2 border-gray-200">
-              {/* Awal Foto, Username */}
-              <div className="w-fit h-fit flex justify-start items-center gap-2">
-                {/* Awal Foto Profil */}
-                <Link
-                  to={`/${dataPost?.postData.Author?.username}`}
-                  className="w-10 h-10 relative overflow-hidden rounded-full"
-                >
-                  <img
-                    src={dataPost?.postData?.Author?.avatar}
-                    alt={`Foto Profil ${dataPost?.postData?.Author?.username}`}
-                    className="absolute w-full h-full object-cover"
-                  />
-                </Link>
-                {/* Akhir Foto Profil */}
-
-                {/* Awal Username dan Verified */}
-                <div className="w-fit h-fit flex gap-1 items-center">
-                  {/* Awal Username */}
+          {loadingPost ? (
+            <div className="bg-white w-[53%] h-full flex justify-center items-center">
+              <AiOutlineLoading3Quarters className="text-4xl text-gray-500 animate-spin" />
+            </div>
+          ) : (
+            <div className="bg-white w-[53%] h-full flex flex-col justify-start items-start  ">
+              {/* Awal Profil */}
+              <div className="w-full h-[12%] flex justify-between items-center border-b px-2 border-gray-200">
+                {/* Awal Foto, Username */}
+                <div className="w-fit h-fit flex justify-start items-center gap-2">
+                  {/* Awal Foto Profil */}
                   <Link
-                    to={`/${dataPost?.postData.Author?.username}`}
-                    className="font-semibold text-sm hover:underline hover:text-blue-600"
+                    to={`/${dataPost?.postData?.Author?.username}`}
+                    className="w-10 h-10 relative overflow-hidden rounded-full"
                   >
-                    {dataPost?.postData?.Author?.username}
+                    <img
+                      src={dataPost?.postData?.Author?.avatar}
+                      alt={`Foto Profil ${dataPost?.postData?.Author?.username}`}
+                      className="absolute w-full h-full object-cover"
+                    />
                   </Link>
-                  {/* Akhir Username */}
-                  {/* Awal Check Verfied */}
-                  {dataPost?.postData?.Author?.isVerified && (
-                    <MdVerified className="text-blue-500 text-lg" />
-                  )}
-                  {/* Akhir Check Verfied */}
-                </div>
-                {/* Akhir Username dan Verified */}
-              </div>
-              {/* Akhir Foto, Username */}
+                  {/* Akhir Foto Profil */}
 
-              {/* Awal Titik Tiga */}
-              <div className=" ">
-                <BsThreeDots className=" cursor-pointer" />
-              </div>
-              {/* Akhir Titik Tiga */}
-            </div>
-            {/* Akhir Profil */}
-
-            {/* Awal Caption dan Comment */}
-            <div className=" w-full h-[63%] flex flex-col justify-start items-start px-2">
-              {/* Awal Caption */}
-              <div className=" w-full h-fit py-2 flex justify-between items-start gap-2">
-                {/* Awal Foto Profil */}
-                <Link
-                  to={`/${dataPost?.postData.Author?.username}`}
-                  className="w-10 h-10 flex justify-center items-center relative overflow-hidden rounded-full"
-                >
-                  <img
-                    src={dataPost?.postData?.Author?.avatar}
-                    alt={`Foto Profil ${dataPost?.postData?.Author?.username}`}
-                    className="w-full h-full absolute object-cover"
-                  />
-                </Link>
-                {/* Akhir Foto Profil */}
-
-                {/* Awal Teks Caption */}
-                <div className="flex-1 flex flex-col gap-2 justify-start items-start text-sm">
-                  {/* Awal Username dan Caption */}
-                  <p className="leading-snug">
-                    {/* Awal Username dan Verified */}
-                    <span className="font-semibold inline-flex items-center gap-1 mr-1">
-                      <Link
-                        to={`/${dataPost?.postData.Author?.username}`}
-                        className="hover:underline hover:text-blue-600"
-                      >
-                        {dataPost?.postData?.Author?.username}
-                      </Link>
-                      {dataPost?.postData?.Author?.isVerified && (
-                        <MdVerified className="text-blue-500 text-lg" />
-                      )}
-                    </span>
-                    {dataPost?.postData?.caption}
-                    {/* Akhir Username dan Verified */}
-                  </p>
-                  {/* Akhir Username dan Caption */}
-
-                  {/* Awal CreatedAt */}
-                  <span className="text-xs text-gray-500">
-                    {getDayjs(dataPost?.postData?.createdAt)}
-                  </span>
-                  {/* Akhir CreatedAt */}
-                </div>
-                {/* Akhir Teks Caption */}
-              </div>
-              {/* Akhir Caption */}
-
-              {/* Awal Mapping Comment */}
-
-              <div className=" flex-1 overflow-y-auto pr-1 w-full">
-                {dataPost?.postData?.Comments?.map((comment) => {
-                  return (
-                    <div
-                      key={comment.id}
-                      className="w-full h-fit py-3 flex items-start gap-2 text-sm"
+                  {/* Awal Username dan Verified */}
+                  <div className="w-fit h-fit flex gap-1 items-center">
+                    {/* Awal Username */}
+                    <Link
+                      to={`/${dataPost?.postData?.Author?.username}`}
+                      className="font-semibold text-sm hover:underline hover:text-blue-600"
                     >
-                      {/* Awal Foto Profil */}
-                      <Link
-                        to={`/${comment.Author?.username}`}
-                        className="w-10 h-10 relative overflow-hidden rounded-full "
-                      >
-                        <img
-                          src={comment.Author?.avatar}
-                          alt={`Foto Profil ${comment.Author?.username}`}
-                          className="absolute w-full h-full object-cover"
-                        />
-                      </Link>
-                      {/* Akhir Foto Profil */}
-
-                      {/* Awal Teks Comment */}
-                      <div className=" flex-1 flex flex-col gap-1 justify-start items-start">
-                        {/* Awal Username, Verified, dan Comment */}
-                        <p className="leading-snug">
-                          {/* Awal Username dan Verified */}
-                          <span className="font-semibold inline-flex items-center gap-1 mr-1">
-                            <Link
-                              className="hover:underline hover:text-blue-600"
-                              to={`/${comment.Author?.username}`}
-                            >
-                              {comment.Author?.username}
-                            </Link>
-                            {comment.Author?.isVerified && (
-                              <MdVerified className="text-blue-500 text-lg" />
-                            )}
-                          </span>
-                          {comment.content}
-                          {/* Akhir Username dan Verified */}
-                        </p>
-                        {/* Akhir Username, Verified, dan Comment */}
-
-                        {/* Awal Jam Comment */}
-                        <span className="text-xs text-gray-500">
-                          {getDayjs(comment.createdAt)}
-                        </span>
-                        {/* Akhir Jam Comment */}
-                      </div>
-                      {/* Akhir Teks Comment */}
-
-                      {/* Awal Icon Like */}
-                      <TiHeartOutline className=" cursor-pointer hover:scale-105" />
-                      {/* Akhir Icon Like */}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Akhir Mapping Comment */}
-            </div>
-            {/* Awal Caption dan Comment */}
-
-            {/* Awal Like dan Input Comment */}
-            <div className=" w-full h-[25%] border-t border-gray-200 flex flex-col justify-between items-start">
-              {/* Awal Icon, Like, Comment, Bookmark, Jumlah Like, dan CreatedAt */}
-              <div className="flex-2 w-full h-fit flex flex-col justify-between items-start p-2">
-                {/* Awal Icon */}
-                <div className="flex-1 w-full h-fit flex justify-between items-start">
-                  {/* Awal Icon Like, Comment, dan Share */}
-                  <div className="flex gap-4">
-                    {/* Awal Icon Like */}
-
-                    <button
-                      type="button"
-                      disabled={loadingLike}
-                      onClick={() => dispatch(toggleLikePost(PostId))}
-                      className={`${loadingLike ? "cursor-not-allowed opacity-50" : "cursor-pointer"} transition-transform hover:scale-110`}
-                    >
-                      {dataPost?.isLikeByUserId ? (
-                        <FaHeart className="text-red-500 text-2xl " />
-                      ) : (
-                        <FaRegHeart className=" text-2xl " />
-                      )}
-                    </button>
-
-                    {/* Akhir Icon Like */}
-
-                    {/* Awal Icon Comment */}
-                    <button
-                      type="button"
-                      className="cursor-pointer hover:scale-105 transition-transform"
-                      onClick={handleFocusComment}
-                    >
-                      <FaRegComment className="text-2xl" />
-                    </button>
-                    {/* Akhir Icon Comment */}
-
-                    {/* Awal Icon Share */}
-                    <FaRegPaperPlane className="text-2xl cursor-pointer hover:scale-105" />
-                    {/* Akhir Icon Share */}
+                      {dataPost?.postData?.Author?.username}
+                    </Link>
+                    {/* Akhir Username */}
+                    {/* Awal Check Verfied */}
+                    {dataPost?.postData?.Author?.isVerified && (
+                      <MdVerified className="text-blue-500 text-lg" />
+                    )}
+                    {/* Akhir Check Verfied */}
                   </div>
-                  {/* Akhir Icon Like, Comment, dan Share */}
-
-                  {/* Awal Icon Bookmark */}
-                  <FaRegBookmark className="text-2xl cursor-pointer hover:scale-105" />
-                  {/* Akhir Icon Bookmark */}
+                  {/* Akhir Username dan Verified */}
                 </div>
-                {/* Akhir Icon */}
+                {/* Akhir Foto, Username */}
 
-                {/* Awal Jumlah Like dan CreatedAt */}
-
-                <div className=" flex-1 w-full flex flex-col justify-start items-start text-sm">
-                  {/* Awal Jumlah Like */}
-                  <span className="font-semibold">
-                    {countLikes(dataPost?.postData?.Likes.length)} likes
-                  </span>
-                  {/* Akhir Jumlah Like */}
-
-                  {/* Awal Waktu Upload */}
-                  <span className="text-xs text-gray-500">
-                    {getDayjs(dataPost?.postData?.createdAt)}
-                  </span>
-                  {/* Akhir Waktu Upload */}
+                {/* Awal Titik Tiga */}
+                <div className=" ">
+                  <BsThreeDots className=" cursor-pointer" />
                 </div>
-                {/* Akhir Jumlah Like dan CreatedAt */}
+                {/* Akhir Titik Tiga */}
               </div>
-              {/* Akhir Icon, Like, Comment, Bookmark, Jumlah Like, dan CreatedAt */}
+              {/* Akhir Profil */}
 
-              {/* Awal Kolom Input Comment */}
-              <form
-                onSubmit={submitCommentHandler}
-                className="flex-1 py-1 px-2 flex  items-center gap-2 border-t-2 border-gray-200 text-sm w-full"
-              >
-                {/* Awal Icon Smile */}
+              {/* Awal Caption dan Comment */}
+              <div className=" w-full h-[63%] flex flex-col justify-start items-start px-2">
+                {/* Awal Caption */}
+                <div className=" w-full h-fit py-2 flex justify-between items-start gap-2">
+                  {/* Awal Foto Profil */}
+                  <Link
+                    to={`/${dataPost?.postData?.Author?.username}`}
+                    className="w-10 h-10 flex justify-center items-center relative overflow-hidden rounded-full"
+                  >
+                    <img
+                      src={dataPost?.postData?.Author?.avatar}
+                      alt={`Foto Profil ${dataPost?.postData?.Author?.username}`}
+                      className="w-full h-full absolute object-cover"
+                    />
+                  </Link>
+                  {/* Akhir Foto Profil */}
 
-                <FaRegFaceSmile className="text-2xl cursor-pointer hover:scale-105 transition-transform" />
+                  {/* Awal Teks Caption */}
+                  <div className="flex-1 flex flex-col gap-2 justify-start items-start text-sm">
+                    {/* Awal Username dan Caption */}
+                    <p className="leading-snug">
+                      {/* Awal Username dan Verified */}
+                      <span className="font-semibold inline-flex items-center gap-1 mr-1">
+                        <Link
+                          to={`/${dataPost?.postData?.Author?.username}`}
+                          className="hover:underline hover:text-blue-600"
+                        >
+                          {dataPost?.postData?.Author?.username}
+                        </Link>
+                        {dataPost?.postData?.Author?.isVerified && (
+                          <MdVerified className="text-blue-500 text-lg" />
+                        )}
+                      </span>
+                      {dataPost?.postData?.caption}
+                      {/* Akhir Username dan Verified */}
+                    </p>
+                    {/* Akhir Username dan Caption */}
 
-                {/* Akhir Icon Smile */}
+                    {/* Awal CreatedAt */}
+                    <span className="text-xs text-gray-500">
+                      {getDayjs(dataPost?.postData?.createdAt)}
+                    </span>
+                    {/* Akhir CreatedAt */}
+                  </div>
+                  {/* Akhir Teks Caption */}
+                </div>
+                {/* Akhir Caption */}
 
-                {/* Awal Input Comment */}
-                <textarea
-                  ref={commentInputRef}
-                  name="doComment"
-                  id="doComment"
-                  placeholder="Add a Comment ..."
-                  rows={1}
-                  value={doComment}
-                  onChange={(e) => setDoComment(e.target.value)}
-                  className="flex-1 resize-none outline-none overflow-y-auto"
-                />
-                {/* Akhir Input Comment */}
+                {/* Awal Mapping Comment */}
 
-                {/* Awal Button Kirim */}
-                <button
-                  type="submit"
-                  disabled={
-                    loadingPost || doComment.trim() === "" || loadingComment
-                  }
-                  className={`font-semibold text-blue-800 ${loadingPost || doComment.trim() === "" ? "opacity-50 cursor-not-allowed" : "hover:underline cursor-pointer"} transition-transform`}
+                <div className=" flex-1 overflow-y-auto pr-1 w-full">
+                  {dataPost?.postData?.Comments?.map((comment) => {
+                    return (
+                      <div
+                        key={comment.id}
+                        className="w-full h-fit py-3 flex items-start gap-2 text-sm"
+                      >
+                        {/* Awal Foto Profil */}
+                        <Link
+                          to={`/${comment.Author?.username}`}
+                          className="w-10 h-10 relative overflow-hidden rounded-full "
+                        >
+                          <img
+                            src={comment.Author?.avatar}
+                            alt={`Foto Profil ${comment.Author?.username}`}
+                            className="absolute w-full h-full object-cover"
+                          />
+                        </Link>
+                        {/* Akhir Foto Profil */}
+
+                        {/* Awal Teks Comment */}
+                        <div className=" flex-1 flex flex-col gap-1 justify-start items-start">
+                          {/* Awal Username, Verified, dan Comment */}
+                          <p className="leading-snug">
+                            {/* Awal Username dan Verified */}
+                            <span className="font-semibold inline-flex items-center gap-1 mr-1">
+                              <Link
+                                className="hover:underline hover:text-blue-600"
+                                to={`/${comment.Author?.username}`}
+                              >
+                                {comment.Author?.username}
+                              </Link>
+                              {comment.Author?.isVerified && (
+                                <MdVerified className="text-blue-500 text-lg" />
+                              )}
+                            </span>
+                            {comment.content}
+                            {/* Akhir Username dan Verified */}
+                          </p>
+                          {/* Akhir Username, Verified, dan Comment */}
+
+                          {/* Awal Jam Comment */}
+                          <span className="text-xs text-gray-500">
+                            {getDayjs(comment.createdAt)}
+                          </span>
+                          {/* Akhir Jam Comment */}
+                        </div>
+                        {/* Akhir Teks Comment */}
+
+                        {/* Awal Icon Like */}
+                        <TiHeartOutline className=" cursor-pointer hover:scale-105" />
+                        {/* Akhir Icon Like */}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Akhir Mapping Comment */}
+              </div>
+              {/* Awal Caption dan Comment */}
+
+              {/* Awal Like dan Input Comment */}
+              <div className=" w-full h-[25%] border-t border-gray-200 flex flex-col justify-between items-start">
+                {/* Awal Icon, Like, Comment, Bookmark, Jumlah Like, dan CreatedAt */}
+                <div className="flex-2 w-full h-fit flex flex-col justify-between items-start p-2">
+                  {/* Awal Icon */}
+                  <div className="flex-1 w-full h-fit flex justify-between items-start">
+                    {/* Awal Icon Like, Comment, dan Share */}
+                    <div className="flex gap-4">
+                      {/* Awal Icon Like */}
+
+                      <button
+                        type="button"
+                        disabled={loadingLike}
+                        onClick={() => dispatch(toggleLikePost(PostId))}
+                        className={`${loadingLike ? "cursor-not-allowed opacity-50" : "cursor-pointer"} transition-transform hover:scale-110`}
+                      >
+                        {dataPost?.isLikeByUserId ? (
+                          <FaHeart className="text-red-500 text-2xl " />
+                        ) : (
+                          <FaRegHeart className=" text-2xl " />
+                        )}
+                      </button>
+
+                      {/* Akhir Icon Like */}
+
+                      {/* Awal Icon Comment */}
+                      <button
+                        type="button"
+                        className="cursor-pointer hover:scale-105 transition-transform"
+                        onClick={handleFocusComment}
+                      >
+                        <FaRegComment className="text-2xl" />
+                      </button>
+                      {/* Akhir Icon Comment */}
+
+                      {/* Awal Icon Share */}
+                      <FaRegPaperPlane className="text-2xl cursor-pointer hover:scale-105" />
+                      {/* Akhir Icon Share */}
+                    </div>
+                    {/* Akhir Icon Like, Comment, dan Share */}
+
+                    {/* Awal Icon Bookmark */}
+                    <FaRegBookmark className="text-2xl cursor-pointer hover:scale-105" />
+                    {/* Akhir Icon Bookmark */}
+                  </div>
+                  {/* Akhir Icon */}
+
+                  {/* Awal Jumlah Like dan CreatedAt */}
+
+                  <div className=" flex-1 w-full flex flex-col justify-start items-start text-sm">
+                    {/* Awal Jumlah Like */}
+                    <span className="font-semibold">
+                      {countLikes(dataPost?.postData?.Likes.length)} likes
+                    </span>
+                    {/* Akhir Jumlah Like */}
+
+                    {/* Awal Waktu Upload */}
+                    <span className="text-xs text-gray-500">
+                      {getDayjs(dataPost?.postData?.createdAt)}
+                    </span>
+                    {/* Akhir Waktu Upload */}
+                  </div>
+                  {/* Akhir Jumlah Like dan CreatedAt */}
+                </div>
+                {/* Akhir Icon, Like, Comment, Bookmark, Jumlah Like, dan CreatedAt */}
+
+                {/* Awal Kolom Input Comment */}
+                <form
+                  onSubmit={submitCommentHandler}
+                  className="flex-1 py-1 px-2 flex  items-center gap-2 border-t-2 border-gray-200 text-sm w-full"
                 >
-                  {loadingComment ? "Loading..." : "Kirim"}
-                </button>
-                {/* Akhir Button Kirim */}
-              </form>
-              {/* Akhir Kolom Input Comment */}
+                  {/* Awal Icon Smile */}
+
+                  <FaRegFaceSmile className="text-2xl cursor-pointer hover:scale-105 transition-transform" />
+
+                  {/* Akhir Icon Smile */}
+
+                  {/* Awal Input Comment */}
+                  <textarea
+                    ref={commentInputRef}
+                    name="doComment"
+                    id="doComment"
+                    placeholder="Add a Comment ..."
+                    rows={1}
+                    value={doComment}
+                    onChange={(e) => setDoComment(e.target.value)}
+                    className="flex-1 resize-none outline-none overflow-y-auto"
+                  />
+                  {/* Akhir Input Comment */}
+
+                  {/* Awal Button Kirim */}
+                  <button
+                    type="submit"
+                    disabled={
+                      loadingPost || doComment.trim() === "" || loadingComment
+                    }
+                    className={`font-semibold text-blue-800 ${loadingPost || doComment.trim() === "" ? "opacity-50 cursor-not-allowed" : "hover:underline cursor-pointer"} transition-transform`}
+                  >
+                    {loadingComment ? "Loading..." : "Kirim"}
+                  </button>
+                  {/* Akhir Button Kirim */}
+                </form>
+                {/* Akhir Kolom Input Comment */}
+              </div>
+              {/* Akhir Like dan Input Comment */}
             </div>
-            {/* Akhir Like dan Input Comment */}
-          </div>
+          )}
           {/* Akhir Caption, Like, & Comment */}
         </div>
       </div>

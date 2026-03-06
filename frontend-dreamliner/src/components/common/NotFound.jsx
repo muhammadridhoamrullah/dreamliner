@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function NotFound() {
   return (
-    <div className="-to-br from-[#3d0563]  to-[#d37f0b] w-full min-h-screen flex justify-center items-center gap-4">
+    <div className="bg-linear-to-br from-[#3d0563]  to-[#d37f0b] w-full min-h-screen flex justify-center items-center gap-4">
       {/* Awal Tengah */}
       <div className="text-white w-200 h-90 flex justify-between items-center">
         {/* Awal Teks */}

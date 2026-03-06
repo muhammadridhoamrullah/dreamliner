@@ -41,6 +41,30 @@ class UserController {
       next(error);
     }
   }
+
+  static async followUser(req, res, next) {
+    try {
+      const { username } = req.params;
+      const UserId = req.user.id;
+
+      if (!username) {
+        throw { name: "USERNAME_IS_REQUIRED" };
+      }
+
+      // Panggil service untuk follow user
+      const result = await UserService.followUser(UserId, username);
+
+      res.status(200).json({
+        success: true,
+        data: result,
+        message: result.isFollowing
+          ? `You are now following ${username}`
+          : `You have unfollowed ${username}`,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = {

@@ -8,12 +8,15 @@ import Profile from "../pages/(Auth)/Profile";
 import { publicAPI } from "../api/axiosInstance";
 import ProfileLayout from "../components/layout/(Non-Auth)/ProfileLayout";
 import PostModalFeed from "../components/common/post/PostModalFeed";
+import LoadingSkeleton from "../components/common/LoadingSkeleton";
 
 async function checkUsername({ params }) {
   try {
     const { username } = params;
+    console.log(username, "username");
 
     let res = await publicAPI.get(`users/find/${username}`);
+    console.log(res, "ResRoute");
 
     if (!res.data.success) {
       throw new Response("User not found", { status: 404 });
@@ -25,6 +28,24 @@ async function checkUsername({ params }) {
       throw new Response("User not found", { status: 404 });
     }
 
+    throw new Response("Server error", { status: 500 });
+  }
+}
+async function checkPostId({ params }) {
+  try {
+    const { PostId } = params;
+    let res = await publicAPI.get(`posts/${PostId}`);
+    console.log(res, "post res check");
+
+    if (!res.data.data.postData) {
+      throw new Response("Post not found", { status: 404 });
+    }
+
+    return res.data.data;
+  } catch (error) {
+    if (error.response?.status === 404) {
+      throw new Response("Post not found", { status: 404 });
+    }
     throw new Response("Server error", { status: 500 });
   }
 }
@@ -68,14 +89,22 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <ProfileLayout />,
+    errorElement: <NotFound />,
+    hydrateFallbackElement: <LoadingSkeleton />,
     children: [
       {
-        path: ":username",
-        element: <Profile />,
+        index: true,
+        element: <h1>Feed Following</h1>,
       },
       {
         path: "p/:PostId",
         element: <PostModalFeed />,
+        loader: checkPostId,
+      },
+      {
+        path: ":username",
+        element: <Profile />,
+        loader: checkUsername,
       },
     ],
   },
