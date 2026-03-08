@@ -13,10 +13,8 @@ import LoadingSkeleton from "../components/common/LoadingSkeleton";
 async function checkUsername({ params }) {
   try {
     const { username } = params;
-    console.log(username, "username");
 
     let res = await publicAPI.get(`users/find/${username}`);
-    console.log(res, "ResRoute");
 
     if (!res.data.success) {
       throw new Response("User not found", { status: 404 });
@@ -35,7 +33,6 @@ async function checkPostId({ params }) {
   try {
     const { PostId } = params;
     let res = await publicAPI.get(`posts/${PostId}`);
-    console.log(res, "post res check");
 
     if (!res.data.data.postData) {
       throw new Response("Post not found", { status: 404 });

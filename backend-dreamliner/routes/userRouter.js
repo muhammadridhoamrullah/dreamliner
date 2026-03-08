@@ -11,8 +11,8 @@ userRouter.get(
   optionalAuthentication,
   UserController.findByUsername,
 );
+userRouter.get("/me", optionalAuthentication, UserController.getMyProfile);
 userRouter.use(authentication);
-userRouter.get("/me", UserController.getMyProfile);
 userRouter.post("/follow/:username", UserController.followUser);
 
 module.exports = {

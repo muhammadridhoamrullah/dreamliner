@@ -1,21 +1,28 @@
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 import { FaHeart } from "react-icons/fa";
 import { FaComment } from "react-icons/fa";
+import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 
 export default function ProfileFeeds({ data }) {
+  const { dataUserLogin } = useSelector((state) => state.user);
   const location = useLocation();
 
   return (
     <div className="w-full  grid grid-cols-3 gap-1">
-      {data?.map((post, idx) => {
+      {data?.Posts.map((post, idx) => {
         return (
           <Link
-            to={`/p/${post.id}`}
+            to={dataUserLogin ? `/p/${post.id}` : "/auth/login"}
             state={{
-              backgroundLocation: {
-                location,
-              },
+              backgroundLocation: location,
+              profileData: data,
+            }}
+            onClick={() => {
+              if (!dataUserLogin) {
+                toast.error("You need to login to view the post");
+              }
             }}
             key={post.id}
             className="aspect-square relative group cursor-pointer"

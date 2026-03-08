@@ -3,10 +3,19 @@ const { UserService } = require("../services/UserService");
 class UserController {
   static async getMyProfile(req, res, next) {
     try {
-      const UserId = req.user.id;
+      const UserId = req.user?.id;
+      if (!UserId) {
+        res.status(200).json({
+          success: true,
+          data: null,
+          message: "No user logged in",
+        });
+        return;
+      }
 
       //   Panggil service untuk mendapatkan data user
       const userData = await UserService.getMyProfile(UserId);
+      console.log(userData, "userData di getMyProfile");
 
       res.status(200).json({
         success: true,
@@ -14,6 +23,8 @@ class UserController {
         message: "Get profile success",
       });
     } catch (error) {
+      console.log(error, "error di getMyProfile");
+
       next(error);
     }
   }

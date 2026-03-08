@@ -10,7 +10,7 @@ export const userSlice = createSlice({
     loadingFollowUser: false,
     errorFollowUser: null,
     dataFollowUser: null,
-    loadingUserLogin: false,
+    loadingUserLogin: true,
     errorUserLogin: null,
     dataUserLogin: null,
   },
@@ -136,7 +136,8 @@ export function userLogin() {
       dispatch(userLoginReq());
 
       // Panggil API untuk mendapatkan data user yang sedang login
-      const response = await privateAPI.get("/users/me");
+      const response = await publicAPI.get("/users/me");
+      
 
       dispatch(userLoginSuccess(response.data.data));
     } catch (error) {
