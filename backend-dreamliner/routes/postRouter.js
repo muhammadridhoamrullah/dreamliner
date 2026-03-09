@@ -6,10 +6,26 @@ const {
 
 const postRouter = require("express").Router();
 
-postRouter.get("/:PostId", optionalAuthentication, PostController.findPostById);
+postRouter.get(
+  "/explore",
+  optionalAuthentication,
+  PostController.getExplorePosts,
+);
+postRouter.get(
+  "/find/:PostId",
+  optionalAuthentication,
+  PostController.findPostById,
+);
 
 postRouter.use(authentication);
+// Post
+postRouter.post("/createPost", PostController.createPost);
+postRouter.get("/feed/myFeed", PostController.getMyFeed);
+
+// Like
 postRouter.post("/likes/:PostId", PostController.likePost);
+
+// Comment
 postRouter.post("/comments/:PostId", PostController.commentPost);
 
 module.exports = {

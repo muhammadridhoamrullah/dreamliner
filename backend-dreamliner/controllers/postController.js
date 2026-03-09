@@ -82,6 +82,64 @@ class PostController {
       next(error);
     }
   }
+
+  static async getMyFeed(req, res, next) {
+    try {
+      const UserId = req.user.id;
+
+      // Panggil service untuk mendapatkan feed pengguna
+      const myFeedData = await PostService.getMyFeed(UserId);
+
+      res.status(200).json({
+        success: true,
+        data: myFeedData,
+        message: "Get my feed success",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getExplorePosts(req, res, next) {
+    try {
+      const UserId = req.user?.id || null;
+
+      // Panggil service untuk mendapatkan explore posts
+      const explorePostsData = await PostService.getExplorePosts(UserId);
+
+      res.status(200).json({
+        success: true,
+        data: explorePostsData,
+        message: "Get explore posts success",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async createPost(req, res, next) {
+    try {
+      const UserId = req.user.id;
+      const { imageUrl, caption } = req.body;
+
+      if (!imageUrl) {
+        throw { name: "IMAGE_URL_REQUIRED" };
+      }
+
+      // Panggil service untuk membuat post baru
+      const newPost = await PostService.createPost(UserId, imageUrl, caption);
+
+      res.status(201).json({
+        success: true,
+        data: newPost,
+        message: "Post created successfully",
+      });
+    } catch (error) {
+      console.log(error, "Error apa");
+
+      next(error);
+    }
+  }
 }
 
 module.exports = {

@@ -6,13 +6,9 @@ function errorHandler(err, req, res, next) {
 
   switch (err.name) {
     case "SequelizeValidationError":
-      statusCode = 400;
-      message = err.errors.map((el) => el.message);
-      break;
-
     case "SequelizeUniqueConstraintError":
       statusCode = 400;
-      message = err.errors.map((el) => el.message[0]);
+      message = err.errors[0].message;
       break;
 
     case "LOGIN_INPUT_INVALID":
@@ -98,6 +94,11 @@ function errorHandler(err, req, res, next) {
     case "USERNAME_IS_REQUIRED":
       statusCode = 400;
       message = "Username is required.";
+      break;
+
+    case "IMAGE_URL_REQUIRED":
+      statusCode = 400;
+      message = "Image URL is required.";
       break;
 
     default:

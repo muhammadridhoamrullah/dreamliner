@@ -1,4 +1,5 @@
-const { Post, User, Comment, Like } = require("../models/index");
+const { Op } = require("sequelize");
+const { Post, User, Comment, Like, Follow } = require("../models/index");
 
 class PostRepository {
   static async findPostById(PostId) {
@@ -30,6 +31,13 @@ class PostRepository {
         {
           model: Like,
           as: "Likes",
+          include: [
+            {
+              model: User,
+              as: "User",
+              attributes: ["id", "username", "avatar", "isVerified"],
+            },
+          ],
         },
       ],
     });
@@ -79,6 +87,129 @@ class PostRepository {
     });
 
     return commentWithuthor;
+  }
+
+  static async findFollowing(UserId) {
+    // Panggil model Follow untuk mendapatkan data following user
+    const followingData = await Follow.findAll({
+      where: {
+        FollowerId: UserId,
+      },
+      attributes: ["FollowingId"],
+    });
+
+    return followingData;
+  }
+
+  static async findFeedByFollowingIds(followingIds) {
+    // Panggil model Post untuk mendapatkan data post berdasarkan following user
+    const feedData = await Post.findAll({
+      where: {
+        UserId: followingIds,
+      },
+      include: [
+        {
+          model: User,
+          as: "Author",
+          attributes: ["id", "username", "avatar", "isVerified"],
+        },
+        {
+          model: Like,
+          as: "Likes",
+          include: [
+            {
+              model: User,
+              as: "User",
+              attributes: ["id", "username", "avatar", "isVerified"],
+            },
+          ],
+        },
+        {
+          model: Comment,
+          as: "Comments",
+          include: [
+            {
+              model: User,
+              as: "Author",
+              attributes: [
+                "id",
+                "username",
+                "avatar",
+                "isVerified",
+                "createdAt",
+              ],
+            },
+          ],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+
+    return feedData;
+  }
+
+  static async findExplorePosts(followingIds) {
+    // Panggil model Post untuk mendapatkan data post berdasarkan following user
+
+    let whereClause = {};
+    if (followingIds.length > 0) {
+      whereClause.UserId = {
+        [Op.notIn]: followingIds,
+      };
+    }
+
+    const exploreData = await Post.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: User,
+          as: "Author",
+          attributes: ["id", "username", "avatar", "isVerified"],
+        },
+        {
+          model: Like,
+          as: "Likes",
+          include: [
+            {
+              model: User,
+              as: "User",
+              attributes: ["id", "username", "avatar", "isVerified"],
+            },
+          ],
+        },
+        {
+          model: Comment,
+          as: "Comments",
+          include: [
+            {
+              model: User,
+              as: "Author",
+              attributes: [
+                "id",
+                "username",
+                "avatar",
+                "isVerified",
+                "createdAt",
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    return exploreData;
+  }
+
+  static async createPost(UserId, imageUrl, caption) {
+    // Panggil model Post untuk membuat data post baru
+    const newPost = await Post.create({
+      UserId,
+      imageUrl,
+      caption,
+    });
+    console.log(newPost, "newPost PostRepo");
+
+    return newPost;
   }
 }
 module.exports = {

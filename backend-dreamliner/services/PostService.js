@@ -62,6 +62,37 @@ class PostService {
 
     return newComment;
   }
+
+  static async getMyFeed(UserId) {
+    // Panggil PostRepository untuk mengambil data following user
+    const followingData = await PostRepository.findFollowing(UserId);
+
+    let followingIds = followingData.map((follow) => follow.FollowingId);
+
+    // Panggil PostRepository untuk mengambil data post berasarkan following user
+    const feedData = await PostRepository.findFeedByFollowingIds(followingIds);
+
+    return feedData;
+  }
+
+  static async getExplorePosts(UserId) {
+    // Panggil PostRepository untuk mengambil data following user
+    const followingData = await PostRepository.findFollowing(UserId);
+
+    let followingIds = followingData.map((follow) => follow.FollowingId);
+
+    // Panggil PostRepository untuk mengambil data post, tetapi ini di exclude dari post following user
+    const exploreData = await PostRepository.findExplorePosts(followingIds);
+
+    return exploreData;
+  }
+
+  static async createPost(UserId, imageUrl, caption) {
+    // Panggil PostRepository untuk membuat data post baru
+    const newPost = await PostRepository.createPost(UserId, imageUrl, caption);
+
+    return newPost;
+  }
 }
 
 module.exports = {

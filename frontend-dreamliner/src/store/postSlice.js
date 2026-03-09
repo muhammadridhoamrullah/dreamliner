@@ -94,7 +94,7 @@ export function fetchPostById(PostId) {
       dispatch(findPostByIdReq());
 
       //     Panggil API untuk mendapatkan data post berdasarkan id
-      const response = await publicAPI.get(`/posts/${PostId}`);
+      const response = await publicAPI.get(`/posts/find/${PostId}`);
 
       dispatch(findPostByIdSuccess(response.data.data));
     } catch (error) {
