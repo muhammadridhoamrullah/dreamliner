@@ -13,6 +13,9 @@ export const postSlice = createSlice({
     loadingComment: false,
     errorComment: null,
     dataComment: null,
+    loadingMyFeed: false,
+    errorMyFeed: null,
+    dataMyFeed: null,
   },
   reducers: {
     findPostByIdReq: (state) => {
@@ -72,6 +75,20 @@ export const postSlice = createSlice({
       state.loadingComment = false;
       state.errorComment = action.payload;
     },
+
+    // my Feed
+    myFeedReq: (state) => {
+      state.loadingMyFeed = true;
+      state.errorMyFeed = null;
+    },
+    myFeedSuccess: (state, action) => {
+      state.loadingMyFeed = false;
+      state.dataMyFeed = action.payload;
+    },
+    myFeedError: (state, action) => {
+      state.loadingMyFeed = false;
+      state.errorMyFeed = action.payload;
+    },
   },
 });
 
@@ -85,6 +102,9 @@ export const {
   commentPostReq,
   commentPostSuccess,
   commentPostError,
+  myFeedReq,
+  myFeedSuccess,
+  myFeedError,
 } = postSlice.actions;
 
 //   Thunk untuk mendapatkan data post berdasarkan id
@@ -140,6 +160,25 @@ export function commentPost(PostId, comment) {
       let errMsg =
         error.response?.data?.message || error.message || "An error occurred";
       dispatch(commentPostError(errMsg));
+    }
+  };
+}
+
+// Thunk untuk mendapatkan my feed
+export function fetchMyFeed() {
+  return async (dispatch) => {
+    try {
+      dispatch(myFeedReq());
+
+      // Panggil API untuk mendapatkan my feed
+      const response = await privateAPI.get("/posts/myFeed");
+
+      console.log(response, "res fetchMyFeed");
+      dispatch(myFeedSuccess(response.data.data));
+    } catch (error) {
+      let errMsg =
+        error.response?.data?.message || error.message || "An error occurred";
+      dispatch(myFeedError(errMsg));
     }
   };
 }

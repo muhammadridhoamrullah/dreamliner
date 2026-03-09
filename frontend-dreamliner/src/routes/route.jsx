@@ -9,6 +9,7 @@ import { publicAPI } from "../api/axiosInstance";
 import ProfileLayout from "../components/layout/(Non-Auth)/ProfileLayout";
 import PostModalFeed from "../components/common/post/PostModalFeed";
 import LoadingSkeleton from "../components/common/LoadingSkeleton";
+import MyFeed from "../pages/(Auth)/MyFeed";
 
 async function checkUsername({ params }) {
   try {
@@ -91,7 +92,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <h1>Feed Following</h1>,
+        element: <MyFeed />,
       },
       {
         path: "p/:PostId",

@@ -15,7 +15,6 @@ class UserController {
 
       //   Panggil service untuk mendapatkan data user
       const userData = await UserService.getMyProfile(UserId);
-      console.log(userData, "userData di getMyProfile");
 
       res.status(200).json({
         success: true,

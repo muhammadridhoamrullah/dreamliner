@@ -3,6 +3,8 @@ const { verifyToken } = require("../helpers/jwt");
 
 async function authentication(req, res, next) {
   try {
+    console.log("AUTHEN ASLI");
+
     const { authorization } = req.headers;
 
     if (!authorization) {

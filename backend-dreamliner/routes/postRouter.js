@@ -20,7 +20,7 @@ postRouter.get(
 postRouter.use(authentication);
 // Post
 postRouter.post("/createPost", PostController.createPost);
-postRouter.get("/feed/myFeed", PostController.getMyFeed);
+postRouter.get("/myFeed", PostController.getMyFeed);
 
 // Like
 postRouter.post("/likes/:PostId", PostController.likePost);

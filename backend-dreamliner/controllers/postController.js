@@ -86,9 +86,11 @@ class PostController {
   static async getMyFeed(req, res, next) {
     try {
       const UserId = req.user.id;
+      console.log(UserId, "uSER id controller");
 
       // Panggil service untuk mendapatkan feed pengguna
       const myFeedData = await PostService.getMyFeed(UserId);
+      console.log(myFeedData, "myFeedData Controller");
 
       res.status(200).json({
         success: true,
