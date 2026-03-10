@@ -26,13 +26,13 @@ export default function MyFeed() {
   return (
     <div className=" w-full min-h-screen flex justify-center items-start py-4">
       {/* Awal Bagian Feed */}
-      <div className="bg-pink-300 w-230 h-full flex flex-col gap-2 justify-center items-center">
+      <div className=" w-230 h-full flex flex-col gap-2 justify-center items-center">
         {/* Awal Story */}
         <FeedStory />
         {/* Akhir Story */}
 
         {/* Awal Feed Post */}
-        <div className="bg-green-600 w-120 h-fit flex flex-col gap-2 justify-start items-center">
+        <div className=" w-120 min-h-screen flex flex-col gap-6 justify-start items-center">
           {dataMyFeed?.map((post) => (
             <FeedPost key={post.id} data={post} />
           ))}

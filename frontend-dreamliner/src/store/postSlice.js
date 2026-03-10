@@ -173,7 +173,6 @@ export function fetchMyFeed() {
       // Panggil API untuk mendapatkan my feed
       const response = await privateAPI.get("/posts/myFeed");
 
-      console.log(response, "res fetchMyFeed");
       dispatch(myFeedSuccess(response.data.data));
     } catch (error) {
       let errMsg =

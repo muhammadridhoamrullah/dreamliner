@@ -44,7 +44,7 @@ export default function FeedStory() {
     scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
   }
   return (
-    <div className="bg-pink-300 w-full h-28 flex justify-start items-center ">
+    <div className=" w-full h-28 flex justify-start items-center ">
       {/* Awal Button Scroll Prev */}
       <button
         onClick={scrollLeft}
