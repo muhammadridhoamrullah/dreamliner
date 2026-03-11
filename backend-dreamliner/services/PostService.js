@@ -72,7 +72,18 @@ class PostService {
     // Panggil PostRepository untuk mengambil data post berasarkan following user
     const feedData = await PostRepository.findFeedByFollowingIds(followingIds);
 
-    return feedData;
+    const result = feedData.map((post) => {
+      let plainPost = post.toJSON();
+
+      // Tambahkan properti isLikedByUserId untuk menandai apakah post ini sudah di-like oleh user atau belum
+      plainPost.isLikedByUserId = plainPost.Likes.some(
+        (like) => like.UserId === parseInt(UserId),
+      );
+
+      return plainPost;
+    });
+
+    return result;
   }
 
   static async getExplorePosts(UserId) {

@@ -8,8 +8,8 @@ import Profile from "../pages/(Auth)/Profile";
 import { publicAPI } from "../api/axiosInstance";
 import ProfileLayout from "../components/layout/(Non-Auth)/ProfileLayout";
 import PostModalFeed from "../components/common/post/PostModalFeed";
-import LoadingSkeleton from "../components/common/LoadingSkeleton";
 import MyFeed from "../pages/(Auth)/MyFeed";
+import LoadingSkeleton from "../components/skeleton/LoadingSkeleton";
 
 async function checkUsername({ params }) {
   try {
@@ -33,7 +33,7 @@ async function checkUsername({ params }) {
 async function checkPostId({ params }) {
   try {
     const { PostId } = params;
-    let res = await publicAPI.get(`posts/${PostId}`);
+    let res = await publicAPI.get(`posts/find/${PostId}`);
 
     if (!res.data.data.postData) {
       throw new Response("Post not found", { status: 404 });

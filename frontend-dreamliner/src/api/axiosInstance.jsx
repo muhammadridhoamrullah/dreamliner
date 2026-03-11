@@ -70,13 +70,16 @@ privateAPI.interceptors.response.use(
   (response) => response,
   (error) => {
     const { response } = error;
+    console.log(response, "error privateapi");
 
     if (response?.status === 401) {
       toast.error("Session expired. Please login again.");
       localStorage.clear();
       window.location.href = "/login";
     } else {
-      const message = response?.data?.message || "Something went wrong";
+      const message = response?.statusText || "Something went wrong";
+      console.log(message, "message");
+
       toast.error(message);
     }
 

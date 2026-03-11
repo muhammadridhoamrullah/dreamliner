@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { data, Link, Outlet, useLocation } from "react-router-dom";
 import Profile from "../../../pages/(Auth)/Profile";
 import PostModalFeed from "../../common/post/PostModalFeed";
 import { BsInstagram } from "react-icons/bs";
@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useMemo } from "react";
 import { userLogin } from "../../../store/userSlice";
 import toast from "react-hot-toast";
+import MyFeed from "../../../pages/(Auth)/MyFeed";
 
 export default function ProfileLayout() {
   const dispatch = useDispatch();
@@ -25,6 +26,7 @@ export default function ProfileLayout() {
   );
 
   const backgroundLocation = location.state?.backgroundLocation;
+ 
   const profileData = location.state?.profileData;
 
   const menuItems = useMemo(
@@ -74,7 +76,11 @@ export default function ProfileLayout() {
       {/* Untuk Modal */}
       {backgroundLocation && (
         <>
-          <Profile data={profileData} />
+          {backgroundLocation.pathname === "/" ? (
+            <MyFeed />
+          ) : (
+            <Profile data={profileData} />
+          )}
           <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
             <PostModalFeed />
           </div>
@@ -111,3 +117,24 @@ export default function ProfileLayout() {
     </div>
   );
 }
+
+// Objecthash: ""key: "vfa0av5k"pathname: "/"search: ""state: null[[Prototype]]: Object '
+// {pathname: '/ridho', search: '', hash: '', state: null, key: 'default'}
+// hash
+// :
+// ""
+// key
+// :
+// "default"
+// pathname
+// :
+// "/ridho"
+// search
+// :
+// ""
+// state
+// :
+// null
+// [[Prototype]]
+// :
+// Object

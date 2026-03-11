@@ -3,15 +3,29 @@ import { BsThreeDots } from "react-icons/bs";
 import { MdVerified } from "react-icons/md";
 import { LuDot } from "react-icons/lu";
 import { countLikes, getDayjs } from "../../../utils/functionHelpers";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegPaperPlane } from "react-icons/fa6";
 import { FaRegBookmark } from "react-icons/fa";
 import { FaRegComment } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleLikePost } from "../../../store/postSlice";
+import { useEffect } from "react";
 
 export default function FeedPost({ data }) {
-  console.log(data, "data FeedPost");
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const { loadingLike, dataLike, errorLike } = useSelector(
+    (state) => state.post,
+  );
+
+  // useEffect untuk handle error like post
+  useEffect(() => {
+    if (errorLike) {
+      toast.error(errorLike);
+    }
+  }, [errorLike]);
 
   return (
     <div className=" w-full h-fit flex flex-col gap-2 justify-start items-start">
@@ -81,7 +95,7 @@ export default function FeedPost({ data }) {
       {/* Akhir Data User */}
 
       {/* Awal Post */}
-      <div className="bg-blue-400 w-full h-120 rounded-md overflow-hidden relative">
+      <div className="bg-black w-full h-120 rounded-md overflow-hidden relative">
         <img
           src={data?.imageUrl}
           alt={`Post Id ${data?.id}`}
@@ -91,30 +105,40 @@ export default function FeedPost({ data }) {
       {/* Akhir Post */}
 
       {/* Awal Like, Comment, Caption */}
-      <div className=" w-full h-fit flex flex-col gap-2 justify-start items-start px-2">
+      <div className="text-sm w-full h-fit flex flex-col gap-2 justify-start items-start px-2">
         {/* Awal Icon Like, Komen, Share, Bookmark */}
         <div className=" w-full h-fit flex justify-between items-center">
           {/* Awal Icon Like, Comment, dan Share */}
           <div className="flex jusitfy-start items-center gap-4">
             {/* Awal Icon Like */}
             <button
-              className="flex gap-2 justify-start items-center cursor-pointer"
-              onClick={() => toast.success("Liked")}
+              className={`flex gap-2 justify-start items-center cursor-pointer ${loadingLike ? "cursor-not-allowed" : "cursor-pointer"} transition-transform hover:scale-110`}
+              onClick={() => dispatch(toggleLikePost(data?.id))}
             >
-              <FaHeart className="text-2xl text-red-500 hover:scale-110 transition-all duration-300" />
+              {data?.isLikedByUserId ? (
+                <FaHeart className="text-red-500 text-2xl " />
+              ) : (
+                <FaRegHeart className=" text-2xl " />
+              )}
               {countLikes(data?.Likes?.length || 0)}
             </button>
             {/* Akhir Icon Like */}
 
+            {/* THIS IS */}
+
             {/* Awal Icon Comment */}
-            <button
+            <Link
+              to={`/p/${data?.id}`}
+              state={{ backgroundLocation: location }}
               className="flex gap-2 justify-start items-center cursor-pointer"
               onClick={() => toast.success("Comment")}
             >
               <FaRegComment className="text-2xl hover:scale-110 transition-all duration-300" />
               {countLikes(data?.Comments?.length || 0)}
-            </button>
+            </Link>
             {/* Akhir Icon Comment */}
+
+            {/* THIS IS */}
 
             {/* Awal Icon Share */}
             <button
@@ -158,6 +182,12 @@ export default function FeedPost({ data }) {
     </div>
   );
 }
+
+//  {dataPost?.isLikeByUserId ? (
+//                           <FaHeart className="text-red-500 text-2xl " />
+//                         ) : (
+//                           <FaRegHeart className=" text-2xl " />
+//                         )}
 
 // {
 //     "id": 10,

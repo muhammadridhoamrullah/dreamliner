@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 import privateAPI, { publicAPI } from "../api/axiosInstance";
 
 export const postSlice = createSlice({
@@ -13,7 +13,7 @@ export const postSlice = createSlice({
     loadingComment: false,
     errorComment: null,
     dataComment: null,
-    loadingMyFeed: false,
+    loadingMyFeed: true,
     errorMyFeed: null,
     dataMyFeed: null,
   },
@@ -39,9 +39,13 @@ export const postSlice = createSlice({
     likePostSuccess: (state, action) => {
       state.loadingLike = false;
       state.dataLike = action.payload;
+
+      // Debug dengan current
+      // console.log("Before Update", current(state.dataMyFeed));
+
+      // Untuk single post
       if (state.data?.postData) {
         const wasLiked = state.data.isLikeByUserId;
-        console.log(action.payload, "action payload");
 
         state.data.isLikeByUserId = !wasLiked;
 
@@ -51,6 +55,32 @@ export const postSlice = createSlice({
           );
         } else {
           state.data.postData.Likes.push(action.payload.likeData);
+        }
+      }
+
+      // Untuk my feed
+      if (state.dataMyFeed && Array.isArray(state.dataMyFeed)) {
+        const postIndex = state.dataMyFeed.findIndex(
+          (post) => post.id === action.payload.likeData.PostId,
+        );
+
+        if (postIndex !== -1) {
+          const post = state.dataMyFeed[postIndex];
+
+          let wasLikedRn = post.isLikedByUserId;
+          post.isLikedByUserId = !wasLikedRn;
+
+          if (wasLikedRn) {
+            // unlike: hapus like dari array Likes
+
+            post.Likes = post.Likes.filter(
+              (like) => like.id !== action.payload.likeData.id,
+            );
+          } else {
+            // like: tambahkan like ke array Likes
+
+            post.Likes.push(action.payload.likeData);
+          }
         }
       }
     },
@@ -78,7 +108,6 @@ export const postSlice = createSlice({
 
     // my Feed
     myFeedReq: (state) => {
-      state.loadingMyFeed = true;
       state.errorMyFeed = null;
     },
     myFeedSuccess: (state, action) => {
@@ -170,6 +199,7 @@ export function fetchMyFeed() {
     try {
       dispatch(myFeedReq());
 
+      // await new Promise((resolve) => setTimeout(resolve, 5000)); // Simulasi delay 1 detik
       // Panggil API untuk mendapatkan my feed
       const response = await privateAPI.get("/posts/myFeed");
 
@@ -183,3 +213,16 @@ export function fetchMyFeed() {
 }
 
 export default postSlice.reducer;
+
+// {
+//     "liked": true,
+//     "action": "liked",
+//     "likeData": {
+//         "id": 56,
+//         "PostId": 2,
+//         "UserId": 13,
+//         "updatedAt": "2026-03-11T07:20:25.377Z",
+//         "createdAt": "2026-03-11T07:20:25.377Z",
+//         "deletedAt": null
+//     }
+// }
