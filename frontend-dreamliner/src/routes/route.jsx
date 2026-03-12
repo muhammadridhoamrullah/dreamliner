@@ -10,6 +10,7 @@ import ProfileLayout from "../components/layout/(Non-Auth)/ProfileLayout";
 import PostModalFeed from "../components/common/post/PostModalFeed";
 import MyFeed from "../pages/(Auth)/MyFeed";
 import LoadingSkeleton from "../components/skeleton/LoadingSkeleton";
+import Explore from "../pages/(Auth)/Explore";
 
 async function checkUsername({ params }) {
   try {
@@ -98,6 +99,10 @@ const router = createBrowserRouter([
         path: "p/:PostId",
         element: <PostModalFeed />,
         loader: checkPostId,
+      },
+      {
+        path: "explore",
+        element: <Explore />,
       },
       {
         path: ":username",

@@ -16,6 +16,9 @@ export const postSlice = createSlice({
     loadingMyFeed: true,
     errorMyFeed: null,
     dataMyFeed: null,
+    loadingExplore: true,
+    errorExplore: null,
+    dataExplore: null,
   },
   reducers: {
     findPostByIdReq: (state) => {
@@ -118,6 +121,19 @@ export const postSlice = createSlice({
       state.loadingMyFeed = false;
       state.errorMyFeed = action.payload;
     },
+
+    // explore
+    exploreReq: (state) => {
+      state.errorExplore = null;
+    },
+    exploreSuccess: (state, action) => {
+      state.loadingExplore = false;
+      state.dataExplore = action.payload;
+    },
+    exploreError: (state, action) => {
+      state.loadingExplore = false;
+      state.errorExplore = action.payload;
+    },
   },
 });
 
@@ -134,6 +150,9 @@ export const {
   myFeedReq,
   myFeedSuccess,
   myFeedError,
+  exploreReq,
+  exploreSuccess,
+  exploreError,
 } = postSlice.actions;
 
 //   Thunk untuk mendapatkan data post berdasarkan id
@@ -208,6 +227,24 @@ export function fetchMyFeed() {
       let errMsg =
         error.response?.data?.message || error.message || "An error occurred";
       dispatch(myFeedError(errMsg));
+    }
+  };
+}
+
+// Thunk untuk mendapatkan explore feed
+export function fetchExplore() {
+  return async (dispatch) => {
+    try {
+      dispatch(exploreReq());
+
+      // Panggil API untuk mendapatkan explore feed
+      const response = await publicAPI.get("/posts/explore");
+
+      dispatch(exploreSuccess(response.data.data));
+    } catch (error) {
+      let errMsg =
+        error.response?.data?.message || error.message || "An error occurred";
+      dispatch(exploreError(errMsg));
     }
   };
 }

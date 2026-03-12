@@ -131,7 +131,6 @@ export default function FeedPost({ data }) {
               to={`/p/${data?.id}`}
               state={{ backgroundLocation: location }}
               className="flex gap-2 justify-start items-center cursor-pointer"
-              onClick={() => toast.success("Comment")}
             >
               <FaRegComment className="text-2xl hover:scale-110 transition-all duration-300" />
               {countLikes(data?.Comments?.length || 0)}

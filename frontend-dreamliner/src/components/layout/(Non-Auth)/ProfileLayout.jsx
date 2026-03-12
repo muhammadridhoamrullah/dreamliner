@@ -17,6 +17,7 @@ import { useEffect, useMemo } from "react";
 import { userLogin } from "../../../store/userSlice";
 import toast from "react-hot-toast";
 import MyFeed from "../../../pages/(Auth)/MyFeed";
+import Explore from "../../../pages/(Auth)/Explore";
 
 export default function ProfileLayout() {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ export default function ProfileLayout() {
   );
 
   const backgroundLocation = location.state?.backgroundLocation;
- 
+
   const profileData = location.state?.profileData;
 
   const menuItems = useMemo(
@@ -36,7 +37,7 @@ export default function ProfileLayout() {
       { name: "Reels", path: "/reels", icon: LuSquarePlay },
       { name: "Messages", path: "/messages", icon: GoPaperAirplane },
       { name: "Search", path: "/search", icon: GoSearch },
-      { name: "Browse", path: "/browse", icon: ImCompass2 },
+      { name: "Explore", path: "/explore", icon: ImCompass2 },
       {
         name: "Notifications",
         path: "/notifications",
@@ -78,6 +79,8 @@ export default function ProfileLayout() {
         <>
           {backgroundLocation.pathname === "/" ? (
             <MyFeed />
+          ) : backgroundLocation.pathname === "/explore" ? (
+            <Explore />
           ) : (
             <Profile data={profileData} />
           )}
