@@ -16,9 +16,13 @@ export const postSlice = createSlice({
     loadingMyFeed: true,
     errorMyFeed: null,
     dataMyFeed: null,
+    pageMyFeed: 1,
+    hasMoreMyFeed: true,
     loadingExplore: true,
     errorExplore: null,
     dataExplore: null,
+    pageExplore: 1,
+    hasMoreExplore: true,
   },
   reducers: {
     findPostByIdReq: (state) => {
@@ -69,6 +73,7 @@ export const postSlice = createSlice({
 
         if (postIndex !== -1) {
           const post = state.dataMyFeed[postIndex];
+          console.log(current(post), "post slice");
 
           let wasLikedRn = post.isLikedByUserId;
           post.isLikedByUserId = !wasLikedRn;
@@ -82,6 +87,29 @@ export const postSlice = createSlice({
           } else {
             // like: tambahkan like ke array Likes
 
+            post.Likes.push(action.payload.likeData);
+          }
+        }
+      }
+
+      // untuk explore feed
+      if (state.dataExplore && Array.isArray(state.dataExplore)) {
+        const postIndex = state.dataExplore.findIndex(
+          (post) => post.id === action.payload.likeData.PostId,
+        );
+
+        if (postIndex !== -1) {
+          const post = state.dataExplore[postIndex];
+          let wasLikedRn = post.isLikedByUserId;
+          post.isLikedByUserId = !wasLikedRn;
+
+          if (wasLikedRn) {
+            // unlike: hapus like dari array Likes
+            post.Likes = post.Likes.filter(
+              (like) => like.id !== action.payload.likeData.id,
+            );
+          } else {
+            // like: tambahkan like ke array Likes
             post.Likes.push(action.payload.likeData);
           }
         }
@@ -100,8 +128,33 @@ export const postSlice = createSlice({
     commentPostSuccess: (state, action) => {
       state.loadingComment = false;
       state.dataComment = action.payload;
+
       if (state.data?.postData) {
         state.data.postData.Comments.push(action.payload);
+      }
+
+      // Untuk my feed
+      if (state.dataMyFeed && Array.isArray(state.dataMyFeed)) {
+        const postIndex = state.dataMyFeed.findIndex(
+          (post) => post.id === action.payload.PostId,
+        );
+
+        if (postIndex !== 1) {
+          const post = state.dataMyFeed[postIndex];
+          post.Comments.push(action.payload);
+        }
+      }
+
+      // Untuk explore feed
+      if (state.dataExplore && Array.isArray(state.dataExplore)) {
+        const postIndex = state.dataExplore.findIndex(
+          (post) => post.id === action.payload.PostId,
+        );
+
+        if (postIndex !== -1) {
+          const post = state.dataExplore[postIndex];
+          post.Comments.push(action.payload);
+        }
       }
     },
     commentPostError: (state, action) => {
@@ -115,7 +168,18 @@ export const postSlice = createSlice({
     },
     myFeedSuccess: (state, action) => {
       state.loadingMyFeed = false;
-      state.dataMyFeed = action.payload;
+      const { posts, hasMore, currentPage } = action.payload;
+
+      // Page 1 ini untuk initial load, jadi langsung set dataMyFeed dengan posts
+      if (currentPage === 1) {
+        state.dataMyFeed = posts;
+      } else {
+        // Untuk page selanjutnya, kita append posts ke dataMyFeed yang sudah ada
+        state.dataMyFeed = [...(state.dataMyFeed || []), ...posts];
+      }
+
+      state.hasMoreMyFeed = hasMore;
+      state.pageMyFeed = currentPage;
     },
     myFeedError: (state, action) => {
       state.loadingMyFeed = false;
@@ -124,11 +188,21 @@ export const postSlice = createSlice({
 
     // explore
     exploreReq: (state) => {
+      state.loadingExplore = true;
       state.errorExplore = null;
     },
     exploreSuccess: (state, action) => {
       state.loadingExplore = false;
-      state.dataExplore = action.payload;
+      const { posts, hasMore, currentPage } = action.payload;
+
+      if (currentPage === 1) {
+        state.dataExplore = posts;
+      } else {
+        state.dataExplore = [...(state.dataExplore || []), ...posts];
+      }
+
+      state.hasMoreExplore = hasMore;
+      state.pageExplore = currentPage;
     },
     exploreError: (state, action) => {
       state.loadingExplore = false;
@@ -181,6 +255,7 @@ export function toggleLikePost(PostId) {
 
       // Panggil API untuk like/unlike post
       const response = await privateAPI.post(`/posts/likes/${PostId}`);
+      console.log(response, "like");
 
       dispatch(likePostSuccess(response.data.data));
     } catch (error) {
@@ -213,17 +288,31 @@ export function commentPost(PostId, comment) {
 }
 
 // Thunk untuk mendapatkan my feed
-export function fetchMyFeed() {
+export function fetchMyFeed(page = 1, limit = 5) {
   return async (dispatch) => {
     try {
       dispatch(myFeedReq());
 
       // await new Promise((resolve) => setTimeout(resolve, 5000)); // Simulasi delay 1 detik
       // Panggil API untuk mendapatkan my feed
-      const response = await privateAPI.get("/posts/myFeed");
+      const response = await privateAPI.get("/posts/myFeed", {
+        params: {
+          page,
+          limit,
+        },
+      });
+      console.log(response, "res");
 
-      dispatch(myFeedSuccess(response.data.data));
+      dispatch(
+        myFeedSuccess({
+          posts: response.data.data,
+          hasMore: response.data.hasMore,
+          currentPage: response.data.currentPage,
+        }),
+      );
     } catch (error) {
+      console.log(error, "error APA");
+
       let errMsg =
         error.response?.data?.message || error.message || "An error occurred";
       dispatch(myFeedError(errMsg));
@@ -232,15 +321,26 @@ export function fetchMyFeed() {
 }
 
 // Thunk untuk mendapatkan explore feed
-export function fetchExplore() {
+export function fetchExplore(page = 1, limit = 12) {
   return async (dispatch) => {
     try {
       dispatch(exploreReq());
 
       // Panggil API untuk mendapatkan explore feed
-      const response = await publicAPI.get("/posts/explore");
+      const response = await publicAPI.get("/posts/explore", {
+        params: {
+          page,
+          limit,
+        },
+      });
 
-      dispatch(exploreSuccess(response.data.data));
+      dispatch(
+        exploreSuccess({
+          posts: response.data.data,
+          hasMore: response.data.hasMore,
+          currentPage: response.data.currentPage,
+        }),
+      );
     } catch (error) {
       let errMsg =
         error.response?.data?.message || error.message || "An error occurred";
@@ -261,5 +361,36 @@ export default postSlice.reducer;
 //         "updatedAt": "2026-03-11T07:20:25.377Z",
 //         "createdAt": "2026-03-11T07:20:25.377Z",
 //         "deletedAt": null
+//     }
+// }
+
+//         "data": {
+//             "liked": false,
+//             "action": "unliked",
+//             "likeData": {
+//                 "id": 56,
+//                 "PostId": 2,
+//                 "UserId": 13,
+//                 "createdAt": "2026-03-11T07:20:25.377Z",
+//                 "updatedAt": "2026-03-13T09:01:08.799Z",
+//                 "deletedAt": "2026-03-13T09:01:08.798Z"
+//             }
+//         },
+//
+
+// {
+//     "id": 63,
+//     "PostId": 26,
+//     "UserId": 13,
+//     "content": "wew",
+//     "createdAt": "2026-03-13T09:09:49.750Z",
+//     "updatedAt": "2026-03-13T09:09:49.750Z",
+//     "deletedAt": null,
+//     "Author": {
+//         "id": 13,
+//         "username": "leehyein",
+//         "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEOW9y1yhTF_ZcQTR_0c4PIwmXJExloOWpcw&s",
+//         "isVerified": true,
+//         "createdAt": "2026-02-20T07:33:14.157Z"
 //     }
 // }

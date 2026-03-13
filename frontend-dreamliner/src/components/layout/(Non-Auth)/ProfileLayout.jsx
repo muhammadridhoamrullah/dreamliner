@@ -18,6 +18,7 @@ import { userLogin } from "../../../store/userSlice";
 import toast from "react-hot-toast";
 import MyFeed from "../../../pages/(Auth)/MyFeed";
 import Explore from "../../../pages/(Auth)/Explore";
+import Footer from "../../common/Footer";
 
 export default function ProfileLayout() {
   const dispatch = useDispatch();
@@ -73,7 +74,12 @@ export default function ProfileLayout() {
   return (
     <div className=" min-h-screen relative">
       {/* Untuk Background */}
-      {!backgroundLocation && <Outlet />}
+      {!backgroundLocation && (
+        <div className="min-h-screen flex flex-col gap-6">
+          <Outlet />
+          <Footer />
+        </div>
+      )}
       {/* Untuk Modal */}
       {backgroundLocation && (
         <>
@@ -120,24 +126,3 @@ export default function ProfileLayout() {
     </div>
   );
 }
-
-// Objecthash: ""key: "vfa0av5k"pathname: "/"search: ""state: null[[Prototype]]: Object '
-// {pathname: '/ridho', search: '', hash: '', state: null, key: 'default'}
-// hash
-// :
-// ""
-// key
-// :
-// "default"
-// pathname
-// :
-// "/ridho"
-// search
-// :
-// ""
-// state
-// :
-// null
-// [[Prototype]]
-// :
-// Object

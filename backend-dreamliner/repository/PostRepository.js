@@ -1,4 +1,4 @@
-const { Op } = require("sequelize");
+const { Op, or } = require("sequelize");
 const { Post, User, Comment, Like, Follow } = require("../models/index");
 
 class PostRepository {
@@ -101,9 +101,10 @@ class PostRepository {
     return followingData;
   }
 
-  static async findFeedByFollowingIds(followingIds) {
+  static async findFeedByFollowingIds(followingIds, page = 1, limit = 5) {
+    const offset = (page - 1) * limit;
     // Panggil model Post untuk mendapatkan data post berdasarkan following user
-    const feedData = await Post.findAll({
+    const { count, rows } = await Post.findAndCountAll({
       where: {
         UserId: followingIds,
       },
@@ -116,6 +117,7 @@ class PostRepository {
         {
           model: Like,
           as: "Likes",
+          separate: true,
           include: [
             {
               model: User,
@@ -127,6 +129,7 @@ class PostRepository {
         {
           model: Comment,
           as: "Comments",
+          separate: true,
           include: [
             {
               model: User,
@@ -142,13 +145,23 @@ class PostRepository {
           ],
         },
       ],
-      order: [["createdAt", "DESC"]],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+      distinct: true,
+      order: [
+        ["createdAt", "DESC"],
+        ["id", "DESC"],
+      ],
     });
 
-    return feedData;
+    return {
+      posts: rows,
+      totalCount: count,
+      hasMore: offset + limit < count,
+    };
   }
 
-  static async findExplorePosts(followingIds) {
+  static async findExplorePosts(followingIds, page = 1, limit = 12) {
     // Panggil model Post untuk mendapatkan data post berdasarkan following user
 
     let whereClause = {};
@@ -158,7 +171,9 @@ class PostRepository {
       };
     }
 
-    const exploreData = await Post.findAll({
+    let offset = (page - 1) * limit;
+
+    const { count, rows } = await Post.findAndCountAll({
       where: whereClause,
       include: [
         {
@@ -169,6 +184,7 @@ class PostRepository {
         {
           model: Like,
           as: "Likes",
+          separate: true,
           include: [
             {
               model: User,
@@ -180,6 +196,7 @@ class PostRepository {
         {
           model: Comment,
           as: "Comments",
+          separate: true,
           include: [
             {
               model: User,
@@ -195,9 +212,20 @@ class PostRepository {
           ],
         },
       ],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+      distinct: true,
+      order: [
+        ["createdAt", "DESC"],
+        ["id", "DESC"],
+      ],
     });
 
-    return exploreData;
+    return {
+      posts: rows,
+      totalCount: count,
+      hasMore: offset + limit < count,
+    };
   }
 
   static async createPost(UserId, imageUrl, caption) {

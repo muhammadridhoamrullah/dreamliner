@@ -2,18 +2,18 @@ import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 import { FaComment } from "react-icons/fa";
+import { countLikes } from "../../../utils/functionHelpers";
 
 export default function FeedExplore({ data }) {
-  const location = useLocation()
+  const location = useLocation();
   const { dataUserLogin } = useSelector((state) => state.user);
   return (
     <Link
       to={dataUserLogin ? `/p/${data.id}` : "/auth/login"}
       state={{
         backgroundLocation: location,
-        
       }}
-      className="w-full aspect-square overflow-hidden relative group cursor-pointer"
+      className="block w-full aspect-square overflow-hidden relative group cursor-pointer"
     >
       {/* Awal Foto Postingan */}
       <img
@@ -28,14 +28,14 @@ export default function FeedExplore({ data }) {
         {/* Awal Like */}
         <div className="flex justify-start items-center gap-2">
           <FaHeart size={24} />
-          {data?.Likes.length}
+          {countLikes(data?.Likes?.length)}
         </div>
         {/* Akhir Like */}
 
         {/* Awal Comment */}
         <div className="flex justify-start items-center gap-2">
           <FaComment size={24} />
-          {data?.Comments.length}
+          {countLikes(data?.Comments?.length)}
         </div>
 
         {/* Akhir Comment */}

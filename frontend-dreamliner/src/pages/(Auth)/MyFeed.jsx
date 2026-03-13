@@ -6,17 +6,21 @@ import toast from "react-hot-toast";
 import FeedPost from "../../components/common/feed/FeedPost";
 import LoadingSkeletonMyFeed from "../../components/skeleton/LoadingSkeletonMyFeed";
 import FeedEmptyArray from "../../components/common/feed/FeedEmptyArray";
+import InfiniteScroll from "react-infinite-scroll-component";
+import LoadingExploreMore from "../../components/common/explore/LoadingExploreMore";
+import EndMessage from "../../components/common/explore/EndMessage";
 
 export default function MyFeed() {
   const dispatch = useDispatch();
-  let { loadingMyFeed, errorMyFeed, dataMyFeed } = useSelector(
-    (state) => state.post,
-  );
-
+  let { loadingMyFeed, errorMyFeed, dataMyFeed, hasMoreMyFeed, pageMyFeed } =
+    useSelector((state) => state.post);
+  console.log(dataMyFeed, "dataMyFeed");
 
   //   useEffect untuk fetch data feed
   useEffect(() => {
-    dispatch(fetchMyFeed());
+    if (!dataMyFeed) {
+      dispatch(fetchMyFeed(1));
+    }
   }, [dispatch]);
 
   //   useEffect untuk handle error
@@ -34,6 +38,12 @@ export default function MyFeed() {
     return <div>error cuy</div>;
   }
 
+  // Function untuk load page selanjutnya saat user scroll ke bawah
+  function loadMorePosts() {
+    if (hasMoreMyFeed && !loadingMyFeed) {
+      dispatch(fetchMyFeed(pageMyFeed + 1));
+    }
+  }
   return (
     <div className=" w-full min-h-screen flex justify-center items-start py-4">
       {/* Awal Bagian Feed */}
@@ -48,8 +58,16 @@ export default function MyFeed() {
           {dataMyFeed && dataMyFeed.length === 0 && <FeedEmptyArray />}
 
           {/* Render Posts */}
-          {dataMyFeed &&
-            dataMyFeed.map((post) => <FeedPost key={post.id} data={post} />)}
+          <InfiniteScroll
+            dataLength={dataMyFeed?.length || 0}
+            next={loadMorePosts}
+            hasMore={hasMoreMyFeed}
+            loader={<LoadingExploreMore />}
+            endMessage={<EndMessage />}
+          >
+            {dataMyFeed &&
+              dataMyFeed.map((post) => <FeedPost key={post.id} data={post} />)}
+          </InfiniteScroll>
 
           {/* Refetch loading - minor indicator */}
           {/* {loadingMyFeed && dataMyFeed && <LoadingSpinner />} */}

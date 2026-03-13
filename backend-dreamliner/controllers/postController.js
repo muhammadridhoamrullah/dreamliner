@@ -87,14 +87,21 @@ class PostController {
     try {
       const UserId = req.user.id;
       console.log(UserId, "uSER id controller");
+      const { page = 1, limit = 5 } = req.query;
 
       // Panggil service untuk mendapatkan feed pengguna
-      const myFeedData = await PostService.getMyFeed(UserId);
-      console.log(myFeedData, "myFeedData Controller");
+      const myFeedData = await PostService.getMyFeed(
+        UserId,
+        parseInt(page),
+        parseInt(limit),
+      );
 
       res.status(200).json({
         success: true,
-        data: myFeedData,
+        data: myFeedData.posts,
+        hasMore: myFeedData.hasMore,
+        totalCount: myFeedData.totalCount,
+        currentPage: parseInt(page),
         message: "Get my feed success",
       });
     } catch (error) {
@@ -105,13 +112,21 @@ class PostController {
   static async getExplorePosts(req, res, next) {
     try {
       const UserId = req.user?.id || null;
+      const { page = 1, limit = 12 } = req.query;
 
       // Panggil service untuk mendapatkan explore posts
-      const explorePostsData = await PostService.getExplorePosts(UserId);
+      const explorePostsData = await PostService.getExplorePosts(
+        UserId,
+        parseInt(page),
+        parseInt(limit),
+      );
 
       res.status(200).json({
         success: true,
-        data: explorePostsData,
+        data: explorePostsData.posts,
+        hasMore: explorePostsData.hasMore,
+        totalCount: explorePostsData.totalCount,
+        currentPage: parseInt(page),
         message: "Get explore posts success",
       });
     } catch (error) {

@@ -63,16 +63,20 @@ class PostService {
     return newComment;
   }
 
-  static async getMyFeed(UserId) {
+  static async getMyFeed(UserId, page = 1, limit = 5) {
     // Panggil PostRepository untuk mengambil data following user
     const followingData = await PostRepository.findFollowing(UserId);
 
     let followingIds = followingData.map((follow) => follow.FollowingId);
 
     // Panggil PostRepository untuk mengambil data post berasarkan following user
-    const feedData = await PostRepository.findFeedByFollowingIds(followingIds);
+    const feedData = await PostRepository.findFeedByFollowingIds(
+      followingIds,
+      page,
+      limit,
+    );
 
-    const result = feedData.map((post) => {
+    const result = feedData.posts.map((post) => {
       let plainPost = post.toJSON();
 
       // Tambahkan properti isLikedByUserId untuk menandai apakah post ini sudah di-like oleh user atau belum
@@ -83,17 +87,25 @@ class PostService {
       return plainPost;
     });
 
-    return result;
+    return {
+      posts: result,
+      totalCount: feedData.totalCount,
+      hasMore: feedData.hasMore,
+    };
   }
 
-  static async getExplorePosts(UserId) {
+  static async getExplorePosts(UserId, page = 1, limit = 12) {
     // Panggil PostRepository untuk mengambil data following user
     const followingData = await PostRepository.findFollowing(UserId);
 
     let followingIds = followingData.map((follow) => follow.FollowingId);
 
     // Panggil PostRepository untuk mengambil data post, tetapi ini di exclude dari post following user
-    const exploreData = await PostRepository.findExplorePosts(followingIds);
+    const exploreData = await PostRepository.findExplorePosts(
+      followingIds,
+      page,
+      limit,
+    );
 
     return exploreData;
   }
