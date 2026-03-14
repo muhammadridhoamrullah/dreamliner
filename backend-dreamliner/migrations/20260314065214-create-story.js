@@ -25,7 +25,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       caption: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
       },
       privacy: {
         type: Sequelize.STRING,

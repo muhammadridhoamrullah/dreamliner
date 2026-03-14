@@ -61,7 +61,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       caption: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: true,
       },
       privacy: {

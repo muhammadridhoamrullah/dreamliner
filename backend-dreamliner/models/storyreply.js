@@ -9,13 +9,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // StoryReply terhadap StoryId
-      StoryReply.belongsTo(models.StoryId, {
+      StoryReply.belongsTo(models.Story, {
         foreignKey: "StoryId",
         as: "Story",
       });
 
       // StoryReply terhadap User
-      StoryReply.belongsTo(models.UserId, { foreignKey: "UserId", as: "User" });
+      StoryReply.belongsTo(models.User, { foreignKey: "UserId", as: "User" });
     }
   }
   StoryReply.init(
@@ -49,7 +49,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       deletedAt: {
         type: DataTypes.DATE,
-        
       },
     },
     {

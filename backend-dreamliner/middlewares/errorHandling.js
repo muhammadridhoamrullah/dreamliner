@@ -101,6 +101,11 @@ function errorHandler(err, req, res, next) {
       message = "Image URL is required.";
       break;
 
+    case "MEDIA_URL_REQUIRED":
+      statusCode = 400;
+      message = "Media URL is required.";
+      break;
+
     default:
       break;
   }
