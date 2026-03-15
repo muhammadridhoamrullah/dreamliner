@@ -71,6 +71,47 @@ class StoryService {
 
     return result;
   }
+
+  static async getStoryByUsername(username, UserId) {
+    // Panggil StoryRepository untuk mengambil data story by username
+    let storyByUsername = await StoryRepository.findStoryByUsername(username);
+
+    // Tambahkan informasi apakah user sudah melihat story tersebut
+    storyByUsername.rows = storyByUsername.rows.map((story) => {
+      const hasViewed = story.Viewers.some(
+        (viewer) => viewer.UserId === UserId,
+      );
+
+      return {
+        ...story.toJSON(),
+        hasViewed,
+      };
+    });
+
+    return storyByUsername;
+  }
+
+  static async markStoryAsViewed(StoryId, UserId) {
+    // Panggil StoryRepository untuk menandai story sudah dilihat oleh user
+
+    const doMarkStoryAsViewed = await StoryRepository.markStoryAsViewed(
+      StoryId,
+      UserId,
+    );
+
+    return doMarkStoryAsViewed;
+  }
+
+  static async replyStory(StoryId, UserId, message) {
+    // Panggil StoryRepository untuk membalas story
+    const replyStory = await StoryRepository.replyStory(
+      StoryId,
+      UserId,
+      message,
+    );
+
+    return replyStory;
+  }
 }
 
 module.exports = {
@@ -158,7 +199,6 @@ module.exports = {
 //     },
 
 // }
-
 
 // {
 //     "success": true,

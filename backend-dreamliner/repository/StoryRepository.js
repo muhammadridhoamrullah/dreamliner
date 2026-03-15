@@ -33,6 +33,7 @@ class StoryRepository {
         expiresAt: {
           [Op.gt]: new Date(), // Hanya ambil story yang belum expired
         },
+        deletedAt: null, // Hanya ambil story yang belum dihapus
       },
       include: [
         {
@@ -53,6 +54,81 @@ class StoryRepository {
     });
 
     return storyTrayData;
+  }
+
+  static async findStoryByUsername(username) {
+    // Panggil model story untuk mengambil data story berdasarkan username
+    let { count, rows } = await Story.findAndCountAll({
+      where: {
+        "$User.username$": username,
+        expiresAt: {
+          [Op.gt]: new Date(),
+        },
+        deletedAt: null,
+      },
+      include: [
+        {
+          model: User,
+          as: "User",
+          attributes: ["id", "username", "avatar", "isVerified"],
+        },
+        {
+          model: StoryView,
+          as: "Viewers",
+          attributes: ["id", "UserId", "createdAt"],
+          include: [
+            {
+              model: User,
+              as: "Viewer",
+              attributes: ["id", "username", "avatar", "isVerified"],
+            },
+          ],
+          order: [["createdAt", "DESC"]],
+        },
+        {
+          model: StoryReply,
+          as: "Replies",
+          attributes: ["id", "UserId", "message", "createdAt"],
+          include: [
+            {
+              model: User,
+              as: "User",
+              attributes: ["id", "username", "avatar", "isVerified"],
+            },
+          ],
+          order: [["createdAt", "DESC"]],
+        },
+      ],
+    });
+
+    const result = {
+      count,
+      rows,
+    };
+
+    return result;
+  }
+
+  static async markStoryAsViewed(StoryId, UserId) {
+    // Panggil model StoryView untuk membuat data baru yang menandai story tersebut sudah dilihat oleh user
+
+    const newStoryView = await StoryView.create({
+      StoryId,
+      UserId,
+    });
+
+    return newStoryView;
+  }
+
+  static async replyStory(StoryId, UserId, message) {
+    // Panggil model StoryReply untuk membuat data baru yang merupakan balasan dari story
+    const newReplyStory = await StoryReply.create({
+      StoryId,
+      UserId,
+      message,
+    });
+
+    return newReplyStory;
   }
 }
 
