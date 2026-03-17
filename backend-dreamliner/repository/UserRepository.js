@@ -66,9 +66,7 @@ class UserRepository {
       where: {
         username,
       },
-      attributes: {
-        exclude: ["password", "updatedAt"],
-      },
+      attributes: ["id", "username", "avatar", "isVerified"],
     });
   }
 

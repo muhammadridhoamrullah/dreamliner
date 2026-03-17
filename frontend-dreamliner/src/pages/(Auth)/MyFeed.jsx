@@ -14,7 +14,6 @@ export default function MyFeed() {
   const dispatch = useDispatch();
   let { loadingMyFeed, errorMyFeed, dataMyFeed, hasMoreMyFeed, pageMyFeed } =
     useSelector((state) => state.post);
-  console.log(dataMyFeed, "dataMyFeed");
 
   //   useEffect untuk fetch data feed
   useEffect(() => {
@@ -47,31 +46,32 @@ export default function MyFeed() {
   return (
     <div className=" w-full min-h-screen flex justify-center items-start py-4">
       {/* Awal Bagian Feed */}
-      <div className="w-230 h-full flex flex-col gap-2 justify-center items-center">
+      <div className=" w-230 h-full flex flex-col gap-2 justify-center items-center">
         {/* Awal Story */}
         <FeedStory />
         {/* Akhir Story */}
 
         {/* Awal Feed Post */}
-        <div className="w-120 min-h-screen flex flex-col gap-6 justify-start items-center">
-          {/* Jika array kosong / belum ada follow siapapun */}
-          {dataMyFeed && dataMyFeed.length === 0 && <FeedEmptyArray />}
 
-          {/* Render Posts */}
-          <InfiniteScroll
-            dataLength={dataMyFeed?.length || 0}
-            next={loadMorePosts}
-            hasMore={hasMoreMyFeed}
-            loader={<LoadingExploreMore />}
-            endMessage={<EndMessage />}
-          >
-            {dataMyFeed &&
-              dataMyFeed.map((post) => <FeedPost key={post.id} data={post} />)}
-          </InfiniteScroll>
+        {/* Jika array kosong / belum ada follow siapapun */}
+        {/* {dataMyFeed && dataMyFeed.length === 0 && <FeedEmptyArray />} */}
 
-          {/* Refetch loading - minor indicator */}
-          {/* {loadingMyFeed && dataMyFeed && <LoadingSpinner />} */}
-        </div>
+        {/* Render Posts */}
+        <InfiniteScroll
+          dataLength={dataMyFeed?.length || 0}
+          next={loadMorePosts}
+          hasMore={hasMoreMyFeed}
+          loader={<LoadingExploreMore />}
+          endMessage={<EndMessage />}
+          className="w-120 min-h-screen flex flex-col gap-6 justify-start items-center"
+        >
+          {dataMyFeed &&
+            dataMyFeed.map((post) => <FeedPost key={post.id} data={post} />)}
+        </InfiniteScroll>
+
+        {/* Refetch loading - minor indicator */}
+        {/* {loadingMyFeed && dataMyFeed && <LoadingSpinner />} */}
+
         {/* Akhir Feed Post */}
       </div>
       {/* Akhir Bagian Feed */}

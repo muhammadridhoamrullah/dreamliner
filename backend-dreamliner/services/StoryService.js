@@ -92,8 +92,18 @@ class StoryService {
   }
 
   static async markStoryAsViewed(StoryId, UserId) {
-    // Panggil StoryRepository untuk menandai story sudah dilihat oleh user
+    // Check apakah user sudah melihat story tersebut
+    const alreadyViewed = await StoryRepository.checkIfStoryAlreadyViewed(
+      StoryId,
+      UserId,
+    );
 
+    // Jika sudah melihat, tidak perlu menambahkan data lagi
+    if (alreadyViewed) {
+      return alreadyViewed;
+    }
+
+    // Panggil StoryRepository untuk menandai story sudah dilihat oleh user
     const doMarkStoryAsViewed = await StoryRepository.markStoryAsViewed(
       StoryId,
       UserId,

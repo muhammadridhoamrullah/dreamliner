@@ -41,10 +41,27 @@ class UserController {
         ...userData.toJSON(),
         isMine: UserId === userData.id,
       };
+      console.log(newData, "newData");
 
       res.status(200).json({
         success: true,
         data: newData,
+        message: "Get user by username success",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async onlyCheckUsername(req, res, next) {
+    try {
+      const { username } = req.params;
+      //   Panggil service untuk mendapatkan data user berdasarkan username
+      const userData = await UserService.onlyCheckUsername(username);
+
+      res.status(200).json({
+        success: true,
+        data: userData,
         message: "Get user by username success",
       });
     } catch (error) {

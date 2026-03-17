@@ -255,7 +255,6 @@ export function toggleLikePost(PostId) {
 
       // Panggil API untuk like/unlike post
       const response = await privateAPI.post(`/posts/likes/${PostId}`);
-      console.log(response, "like");
 
       dispatch(likePostSuccess(response.data.data));
     } catch (error) {
@@ -276,7 +275,6 @@ export function commentPost(PostId, comment) {
       const response = await privateAPI.post(`/posts/comments/${PostId}`, {
         comment,
       });
-      console.log(response, "response commentPost Slice");
 
       dispatch(commentPostSuccess(response.data.data));
     } catch (error) {
@@ -301,7 +299,6 @@ export function fetchMyFeed(page = 1, limit = 5) {
           limit,
         },
       });
-      console.log(response, "res");
 
       dispatch(
         myFeedSuccess({
@@ -394,4 +391,4 @@ export default postSlice.reducer;
 //         "createdAt": "2026-02-20T07:33:14.157Z"
 //     }
 // }
-` `
+` `;

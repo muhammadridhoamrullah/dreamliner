@@ -1,8 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { IoIosArrowDropright } from "react-icons/io";
 import { IoIosArrowDropleft } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchStoryTray } from "../../../store/storySlice";
+import StoryBubbleUser from "../story/StoryBubbleUser";
 
 export default function FeedStory() {
+  const dispatch = useDispatch();
+  const { loadingGetStoryTray, errorGetStoryTray, dataGetStoryTray } =
+    useSelector((state) => state.story);
+
   const scrollRef = useRef(null);
 
   const [showLeft, setShowLeft] = useState(false);
@@ -24,6 +31,11 @@ export default function FeedStory() {
     };
   }, []);
 
+  // useEffect untuk fetch story tray
+  useEffect(() => {
+    dispatch(fetchStoryTray());
+  }, [dispatch]);
+
   //   Function checkScroll
   function checkScroll() {
     let el = scrollRef.current;
@@ -44,7 +56,7 @@ export default function FeedStory() {
     scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
   }
   return (
-    <div className=" w-full h-28 flex justify-start items-center ">
+    <div className=" w-full h-32 flex justify-start items-center ">
       {/* Awal Button Scroll Prev */}
       <button
         onClick={scrollLeft}
@@ -59,13 +71,8 @@ export default function FeedStory() {
         ref={scrollRef}
         className="scrollbar-hide  w-full h-full flex justify-start items-center gap-4 overflow-x-auto scroll-smooth "
       >
-        {[...Array(30)].map((_, index) => (
-          <div
-            key={index}
-            className="min-w-20 h-20 shrink-0 bg-linear-to-tr from-yellow-400 via-red-500 to-purple-600 rounded-full flex justify-center items-center text-white font-bold"
-          >
-            Story {index + 1}
-          </div>
+        {dataGetStoryTray?.map((story, index) => (
+          <StoryBubbleUser key={story.User.id} story={story} />
         ))}
       </div>
       {/* Akhir Story */}
@@ -82,3 +89,120 @@ export default function FeedStory() {
     </div>
   );
 }
+
+// [
+//     {
+//         "User": {
+//             "id": 3,
+//             "username": "charlie_dev",
+//             "avatar": "https://i.pravatar.cc/150?img=3",
+//             "isVerified": true
+//         },
+//         "Stories": [
+//             {
+//                 "id": 4,
+//                 "UserId": 3,
+//                 "mediaType": "image",
+//                 "mediaUrl": "https://i.pinimg.com/736x/c2/41/9e/c2419e80d1fc5f4531522537c3025c14.jpg",
+//                 "caption": "Charlie",
+//                 "privacy": "public",
+//                 "allowReply": true,
+//                 "allowShare": true,
+//                 "expiresAt": "2026-03-15T14:19:11.854Z",
+//                 "deletedAt": null,
+//                 "createdAt": "2026-03-14T14:19:11.844Z",
+//                 "updatedAt": "2026-03-14T14:19:11.844Z",
+//                 "User": {
+//                     "id": 3,
+//                     "username": "charlie_dev",
+//                     "avatar": "https://i.pravatar.cc/150?img=3",
+//                     "isVerified": true
+//                 },
+//                 "Viewers": [],
+//                 "hasViewed": false
+//             }
+//         ]
+//     },
+//     {
+//         "User": {
+//             "id": 13,
+//             "username": "leehyein",
+//             "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEOW9y1yhTF_ZcQTR_0c4PIwmXJExloOWpcw&s",
+//             "isVerified": true
+//         },
+//         "Stories": [
+//             {
+//                 "id": 3,
+//                 "UserId": 13,
+//                 "mediaType": "image",
+//                 "mediaUrl": "https://i.pinimg.com/736x/c4/ca/5d/c4ca5d1e754ed0bc6f9a1419267d5429.jpg",
+//                 "caption": "Lee Hyein ini",
+//                 "privacy": "public",
+//                 "allowReply": true,
+//                 "allowShare": true,
+//                 "expiresAt": "2026-03-15T09:19:19.452Z",
+//                 "deletedAt": null,
+//                 "createdAt": "2026-03-14T09:19:19.451Z",
+//                 "updatedAt": "2026-03-14T09:19:19.451Z",
+//                 "User": {
+//                     "id": 13,
+//                     "username": "leehyein",
+//                     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEOW9y1yhTF_ZcQTR_0c4PIwmXJExloOWpcw&s",
+//                     "isVerified": true
+//                 },
+//                 "Viewers": [],
+//                 "hasViewed": false
+//             },
+//             {
+//                 "id": 2,
+//                 "UserId": 13,
+//                 "mediaType": "image",
+//                 "mediaUrl": "https://i.pinimg.com/736x/c4/ca/5d/c4ca5d1e754ed0bc6f9a1419267d5429.jpg",
+//                 "caption": "Lee Hyein ini",
+//                 "privacy": "public",
+//                 "allowReply": true,
+//                 "allowShare": true,
+//                 "expiresAt": "2026-03-15T08:24:03.417Z",
+//                 "deletedAt": null,
+//                 "createdAt": "2026-03-14T08:24:03.400Z",
+//                 "updatedAt": "2026-03-14T08:24:03.400Z",
+//                 "User": {
+//                     "id": 13,
+//                     "username": "leehyein",
+//                     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEOW9y1yhTF_ZcQTR_0c4PIwmXJExloOWpcw&s",
+//                     "isVerified": true
+//                 },
+//                 "Viewers": [
+//                     {
+//                         "id": 1,
+//                         "UserId": 3,
+//                         "createdAt": "2026-03-15T07:02:11.432Z"
+//                     }
+//                 ],
+//                 "hasViewed": false
+//             },
+//             {
+//                 "id": 1,
+//                 "UserId": 13,
+//                 "mediaType": "image",
+//                 "mediaUrl": "https://i.pinimg.com/736x/c4/ca/5d/c4ca5d1e754ed0bc6f9a1419267d5429.jpg",
+//                 "caption": "wew",
+//                 "privacy": "public",
+//                 "allowReply": true,
+//                 "allowShare": true,
+//                 "expiresAt": "2026-03-15T08:14:01.873Z",
+//                 "deletedAt": null,
+//                 "createdAt": "2026-03-14T08:14:01.872Z",
+//                 "updatedAt": "2026-03-14T08:14:01.872Z",
+//                 "User": {
+//                     "id": 13,
+//                     "username": "leehyein",
+//                     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEOW9y1yhTF_ZcQTR_0c4PIwmXJExloOWpcw&s",
+//                     "isVerified": true
+//                 },
+//                 "Viewers": [],
+//                 "hasViewed": false
+//             }
+//         ]
+//     }
+// ]

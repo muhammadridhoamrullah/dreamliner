@@ -11,6 +11,11 @@ userRouter.get(
   optionalAuthentication,
   UserController.findByUsername,
 );
+userRouter.get(
+  "/find-only/:username",
+  optionalAuthentication,
+  UserController.onlyCheckUsername,
+);
 userRouter.get("/me", optionalAuthentication, UserController.getMyProfile);
 userRouter.use(authentication);
 userRouter.post("/follow/:username", UserController.followUser);

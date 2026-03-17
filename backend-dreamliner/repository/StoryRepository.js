@@ -109,6 +109,18 @@ class StoryRepository {
     return result;
   }
 
+  static async checkIfStoryAlreadyViewed(StoryId, UserId) {
+    // Panggil model StoryView untuk mengecek apakah user sudah melihat story tersebut
+    const alreadyViewed = await StoryView.findOne({
+      where: {
+        StoryId,
+        UserId,
+      },
+    });
+
+    return alreadyViewed;
+  }
+
   static async markStoryAsViewed(StoryId, UserId) {
     // Panggil model StoryView untuk membuat data baru yang menandai story tersebut sudah dilihat oleh user
 
