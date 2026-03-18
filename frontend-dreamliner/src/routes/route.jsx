@@ -126,6 +126,11 @@ const router = createBrowserRouter([
         path: "explore",
         element: <Explore />,
       },
+      {
+        path: "stories/:username/:StoryId",
+        element: <Story />,
+        loader: storyLoader,
+      },
 
       {
         path: ":username",
@@ -134,14 +139,13 @@ const router = createBrowserRouter([
       },
     ],
   },
-  {
-    path: "/stories/:username/:StoryId",
-    element: <Story />,
-    loader: storyLoader,
-    errorElement: <NotFound />,
-    hydrateFallbackElement: <LoadingSkeleton />,
-  },
-
+  // {
+  //   path: "/stories/:username/:StoryId",
+  //   element: <Story />,
+  //   loader: storyLoader,
+  //   errorElement: <NotFound />,
+  //   hydrateFallbackElement: <LoadingSkeleton />,
+  // },
   {
     path: "*",
     element: <NotFound />,

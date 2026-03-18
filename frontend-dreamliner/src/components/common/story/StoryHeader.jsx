@@ -25,7 +25,7 @@ export default function StoryHeader({ user, time, togglePause, isPaused }) {
       </div>
 
       {/* Awal Paused */}
-      <button onClick={togglePause} className="">
+      <button onClick={togglePause} className="cursor-pointer">
         {isPaused ? (
           <IoPlay className="text-2xl text-white" />
         ) : (

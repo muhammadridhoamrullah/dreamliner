@@ -4,6 +4,7 @@ import { IoIosArrowDropleft } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStoryTray } from "../../../store/storySlice";
 import StoryBubbleUser from "../story/StoryBubbleUser";
+import toast from "react-hot-toast";
 
 export default function FeedStory() {
   const dispatch = useDispatch();
@@ -33,8 +34,17 @@ export default function FeedStory() {
 
   // useEffect untuk fetch story tray
   useEffect(() => {
+    console.log("Jalan");
+
     dispatch(fetchStoryTray());
   }, [dispatch]);
+
+  // useEffect untuk handle error
+  useEffect(() => {
+    if (errorGetStoryTray) {
+      toast.error(errorGetStoryTray);
+    }
+  }, [errorGetStoryTray]);
 
   //   Function checkScroll
   function checkScroll() {

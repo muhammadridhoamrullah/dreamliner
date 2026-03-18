@@ -28,7 +28,7 @@ class StoryRepository {
   static async findStoryTrayByFollowingIds(followingIds, UserId) {
     // Panggil model Story untuk mengambil data story berdasarkan following user
     const storyTrayData = await Story.findAll({
-      attributes: ["id", "UserId", "deletedAt", "createdAt"],
+      attributes: ["id", "UserId", "deletedAt", "createdAt", "mediaUrl"],
       where: {
         UserId: followingIds,
         expiresAt: {
