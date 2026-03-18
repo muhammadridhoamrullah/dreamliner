@@ -28,6 +28,7 @@ class StoryRepository {
   static async findStoryTrayByFollowingIds(followingIds, UserId) {
     // Panggil model Story untuk mengambil data story berdasarkan following user
     const storyTrayData = await Story.findAll({
+      attributes: ["id", "UserId", "deletedAt", "createdAt"],
       where: {
         UserId: followingIds,
         expiresAt: {
@@ -35,6 +36,7 @@ class StoryRepository {
         },
         deletedAt: null, // Hanya ambil story yang belum dihapus
       },
+
       include: [
         {
           model: User,
@@ -45,12 +47,17 @@ class StoryRepository {
           model: StoryView,
           as: "Viewers",
           attributes: ["id", "UserId", "createdAt"],
+          include: [
+            {
+              model: User,
+              as: "Viewer",
+              attributes: ["id"],
+            },
+          ],
+          order: [["createdAt", "ASC"]],
         },
       ],
-      order: [
-        ["createdAt", "DESC"],
-        ["id", "DESC"],
-      ],
+      order: [["createdAt", "ASC"]],
     });
 
     return storyTrayData;
@@ -83,7 +90,7 @@ class StoryRepository {
               attributes: ["id", "username", "avatar", "isVerified"],
             },
           ],
-          order: [["createdAt", "DESC"]],
+          order: [["createdAt", "ASC"]],
         },
         {
           model: StoryReply,
@@ -96,9 +103,10 @@ class StoryRepository {
               attributes: ["id", "username", "avatar", "isVerified"],
             },
           ],
-          order: [["createdAt", "DESC"]],
+          order: [["createdAt", "ASC"]],
         },
       ],
+      order: [["createdAt", "ASC"]],
     });
 
     const result = {

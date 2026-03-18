@@ -69,7 +69,35 @@ class StoryService {
 
     const result = Object.values(storyTrayDataGrouped);
 
-    return result;
+    const finalResult = result
+      .map((el) => {
+        // Cek apakah masih ada yang belum dilihat
+        const hasUnSeen = el.Stories.some((story) => !story.hasViewed);
+
+        // Ambil createdAt dari story terbaru
+        const latestCreatedAt = el.Stories.reduce((acc, curr) => {
+          return new Date(curr.createdAt) > new Date(acc)
+            ? curr.createdAt
+            : acc;
+        }, el.Stories[0].createdAt);
+
+        return {
+          ...el,
+          hasUnSeen,
+          latestCreatedAt,
+        };
+      })
+      .sort((a, b) => {
+        // Urutkan berdasarkan hasUnSeen terlebih dahulu
+        if (a.hasUnSeen !== b.hasUnSeen) {
+          return b.hasUnSeen - a.hasUnSeen; // Story dengan hasUnSeen true akan berada di depan
+        }
+
+        // Jika hasUnSeen sama, urutkan berdasarkan latestCreatedAt
+        return new Date(b.latestCreatedAt) - new Date(a.latestCreatedAt); // Story dengan latestCreatedAt terbaru akan berada di depan
+      });
+
+    return finalResult;
   }
 
   static async getStoryByUsername(username, UserId) {
