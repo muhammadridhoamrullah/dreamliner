@@ -73,3 +73,33 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/dreamliner-frontend:${{ github.sha }}
           build-args: |
             VITE_API_URL=${{ secrets.VITE_API_URL_PROD }}
+
+  deploy-backend:
+    needs: push-backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Backend ke EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/dreamliner/backend-dreamliner
+            docker compose pull
+            docker compose up -d
+
+  deploy-frontend:
+    needs: push-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Frontend ke EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/dreamliner/frontend-dreamliner
+            docker compose pull
+            docker compose up -d
