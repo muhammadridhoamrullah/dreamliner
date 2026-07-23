@@ -117,7 +117,7 @@ export default function FeedStory() {
       <div className=" w-24 h-28 flex flex-col justify-center items-center shrink-0 overflow-hidden">
         {/* Awal Profile Picture */}
         <Link
-          onClick={() => toast.success("Story Gweh")}
+          onClick={() => toast.success("My Story Gweh")}
           className={`min-w-22 h-22 shrink-0 bg-linear-to-tr from-yellow-400 via-red-500 to-purple-600 rounded-full relative overflow-hidden flex justify-center items-center `}
         >
           <img

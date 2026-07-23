@@ -26,7 +26,7 @@ class AuthController {
       //   Panggil Service untuk proses login
       const access_token = await AuthService.login(loginData);
 
-      logger.info("Login Successful", {
+      logger.info("Login Successful Bro", {
         email: email,
         access_token: access_token,
       });
