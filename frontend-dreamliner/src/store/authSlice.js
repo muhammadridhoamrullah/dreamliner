@@ -119,6 +119,8 @@ export function register(formData) {
   };
 }
 
+// BaekSongMin
+
 // Thunk untuk verify email
 export function verifyEmail(token) {
   return async (dispatch) => {
