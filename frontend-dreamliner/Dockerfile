@@ -1,13 +1,28 @@
-FROM node:20-alpine
-
+# STAGE 1: Builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
+# Copy package files dulu (layer caching)
 COPY package*.json ./
+RUN npm ci
 
-RUN npm ci --only=production
+# Terima build argument untuk VITE_API_URL
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
 
+# Copy source code dan build
 COPY . .
+RUN npm run build
 
-EXPOSE 5173
+# STAGE 2: Runner (Nginx)
+FROM nginx:alpine AS runner
 
-CMD [ "npm", "run", "dev", "--", "--host" ]
+# Copy hasil build dari stage builder
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy custom nginx config (untuk SPA routing)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

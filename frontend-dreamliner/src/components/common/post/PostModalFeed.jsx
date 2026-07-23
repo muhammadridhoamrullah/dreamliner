@@ -32,6 +32,7 @@ export default function PostModalFeed() {
     data: dataPost,
     error: errorPost,
   } = useSelector((state) => state.post);
+  console.log(dataPost, "dataPost");
 
   const { loadingLike, dataLike, errorLike } = useSelector(
     (state) => state.post,

@@ -12,8 +12,11 @@ import { FiPlus } from "react-icons/fi";
 import { FaRegUserCircle } from "react-icons/fa";
 import { HiMiniBars3 } from "react-icons/hi2";
 import { LuBoxes } from "react-icons/lu";
+import { IoClose } from "react-icons/io5";
+import { IoImageOutline } from "react-icons/io5";
+import { RiVideoLine } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { userLogin } from "../../../store/userSlice";
 import toast from "react-hot-toast";
 import MyFeed from "../../../pages/(Auth)/MyFeed";
@@ -26,6 +29,7 @@ export default function ProfileLayout() {
   const { loadingUserLogin, dataUserLogin, errorUserLogin } = useSelector(
     (state) => state.user,
   );
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const backgroundLocation = location.state?.backgroundLocation;
 
@@ -44,7 +48,12 @@ export default function ProfileLayout() {
         path: "/notifications",
         icon: FaRegHeart,
       },
-      { name: "Create", path: "/create", icon: FiPlus },
+      {
+        name: "Create",
+        path: null,
+        icon: FiPlus,
+        onClick: () => setIsModalOpen(true),
+      },
       {
         name: "Profile",
         path:
@@ -70,6 +79,18 @@ export default function ProfileLayout() {
       dispatch(userLogin());
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isModalOpen]);
 
   return (
     <div className=" min-h-screen relative">
@@ -102,13 +123,30 @@ export default function ProfileLayout() {
         <div className=" w-full h-full flex flex-col justify-around items-center ">
           {menuItems.map((item) => {
             const Icon = item.icon;
+            const commonClass =
+              "w-full flex justify-start px-6 py-3 items-center gap-4  hover:bg-gray-300 transition-colors duration-300 rounded-lg group-hover:rounded-lg  ";
+            if (item.onClick) {
+              return (
+                <button
+                  className={commonClass + "cursor-pointer"}
+                  onClick={item.onClick}
+                  key={item.name}
+                >
+                  {/* Awal Icon */}
+                  <Icon size={22} />
+                  {/* Akhir Icon */}
+
+                  {/* Awal Nama */}
+                  <span className="hidden  group-hover:block text-sm whitespace-nowrap font-semibold">
+                    {item.name}
+                  </span>
+                  {/* Akhir Nama */}
+                </button>
+              );
+            }
 
             return (
-              <Link
-                className="w-full flex justify-start px-6 py-3 items-center gap-4  hover:bg-gray-300 transition-colors duration-300 rounded-lg group-hover:rounded-lg  "
-                to={item.path}
-                key={item.name}
-              >
+              <Link className={commonClass} to={item.path} key={item.name}>
                 {/* Awal Icon */}
                 <Icon size={22} />
                 {/* Akhir Icon */}
@@ -121,6 +159,61 @@ export default function ProfileLayout() {
               </Link>
             );
           })}
+
+          {/* Awal Modal */}
+          {isModalOpen && (
+            <div
+              onClick={() => setIsModalOpen(false)}
+              className="fixed inset-0 bg-black/60 z-50 flex justify-center items-center cursor-pointer"
+            >
+              {/* Awal Form */}
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white w-100 h-110 rounded-2xl flex flex-col justify-between items-center overflow-hidden cursor-default"
+              >
+                {/* Awal Judul Create New Post */}
+                <h2 className="w-full text-center py-3 font-semibold border-b border-gray-300">
+                  Create new post
+                </h2>
+                {/* Akhir Judul Create New Post */}
+
+                {/* Awal Form Input */}
+                <div className="flex-1 w-full flex  flex-col justify-center items-center gap-4">
+                  {/* Awal Icon */}
+                  <div className=" w-fit  flex items-center">
+                    <IoImageOutline className="text-5xl text-gray-500" />
+                    <RiVideoLine className="text-5xl text-gray-500 " />
+                  </div>
+                  {/* Akhir Icon */}
+
+                  {/* Awal Text Drag Your Photo & Video Here */}
+                  <span className="text-xl font-semibold text-gray-500">
+                    Drag your photo and video here
+                  </span>
+                  {/* Akhir Text Drag Your Photo & Video Here */}
+
+                  {/* Awal Button Select From Your Computer */}
+                  <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-800 transition-colors duration-300 cursor-pointer text-sm">
+                    Select from your computer
+                  </button>
+                  {/* Akhir Button Select From Your Computer */}
+                </div>
+                {/* Akhir Form Input */}
+              </div>
+              {/* Akhir Form */}
+
+              {/* Awal Button Exit */}
+              <button
+                className="absolute top-0 right-0 m-4 "
+                onClick={() => setIsModalOpen(false)}
+              >
+                <IoClose className="text-3xl text-white hover:scale-110 cursor-pointer" />
+              </button>
+
+              {/* Akhir Button Exit */}
+            </div>
+          )}
+          {/* Akhir Modal */}
         </div>
       </div>
     </div>

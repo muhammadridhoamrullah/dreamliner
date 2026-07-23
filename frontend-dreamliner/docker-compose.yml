@@ -2,15 +2,8 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.dev
-    container_name: frontend-app
+      args:
+        VITE_API_URL: ${VITE_API_URL}
     ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://localhost:3000
-    volumes:
-      - .:/app
-      - /app/node_modules
-    stdin_open: true
-    tty: true
+      - "5173:80"
     restart: unless-stopped

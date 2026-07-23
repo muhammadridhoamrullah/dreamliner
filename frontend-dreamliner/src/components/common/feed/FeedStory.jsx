@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchStoryTray } from "../../../store/storySlice";
 import StoryBubbleUser from "../story/StoryBubbleUser";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 export default function FeedStory() {
   const dispatch = useDispatch();
@@ -65,6 +66,41 @@ export default function FeedStory() {
   function scrollLeft() {
     scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
   }
+
+  // const dummyStories = Array.from({ length: 15 }, (_, i) => {
+  //   const userId = i + 1;
+
+  //   return {
+  //     User: {
+  //       id: userId,
+  //       username: `user_${userId}`,
+  //       avatar: `https://i.pravatar.cc/150?img=${userId}`,
+  //       isVerified: userId % 3 === 0, // tiap 3 user verified
+  //     },
+  //     Stories: Array.from({ length: 2 }, (_, j) => ({
+  //       id: userId * 10 + j,
+  //       UserId: userId,
+  //       mediaType: "image",
+  //       mediaUrl: `https://picsum.photos/300/500?random=${userId}${j}`,
+  //       caption: `Story ${j + 1} dari user ${userId}`,
+  //       privacy: "public",
+  //       allowReply: true,
+  //       allowShare: true,
+  //       expiresAt: new Date(Date.now() + 86400000).toISOString(), // +1 hari
+  //       deletedAt: null,
+  //       createdAt: new Date().toISOString(),
+  //       updatedAt: new Date().toISOString(),
+  //       User: {
+  //         id: userId,
+  //         username: `user_${userId}`,
+  //         avatar: `https://i.pravatar.cc/150?img=${userId}`,
+  //         isVerified: userId % 3 === 0,
+  //       },
+  //       Viewers: [],
+  //       hasViewed: j % 2 === 0, // selang-seling viewed
+  //     })),
+  //   };
+  // });
   return (
     <div className=" w-full h-32 flex justify-start items-center ">
       {/* Awal Button Scroll Prev */}
@@ -76,6 +112,30 @@ export default function FeedStory() {
         <IoIosArrowDropleft className="text-xl" />
       </button>
       {/* Akhir Button Scroll Prev */}
+
+      {/* Awal Story Current User */}
+      <div className=" w-24 h-28 flex flex-col justify-center items-center shrink-0 overflow-hidden">
+        {/* Awal Profile Picture */}
+        <Link
+          onClick={() => toast.success("Story Gweh")}
+          className={`min-w-22 h-22 shrink-0 bg-linear-to-tr from-yellow-400 via-red-500 to-purple-600 rounded-full relative overflow-hidden flex justify-center items-center `}
+        >
+          <img
+            src={`https://i.pinimg.com/736x/4e/55/46/4e5546152db4a4eea4d1351980fb3367.jpg`}
+            alt="Foto Profil Gweh"
+            className="absolute w-20 h-20 object-cover rounded-full border-2 border-white"
+          />
+        </Link>
+        {/* Akhir Profile Picture */}
+
+        {/* Awal Username */}
+        <span className="text-sm truncate w-full text-center">
+          ridhoamrullah
+        </span>
+        {/* Akhir Username */}
+      </div>
+      {/* Akhir Story Current User */}
+
       {/* Awal Story */}
       <div
         ref={scrollRef}
@@ -99,6 +159,17 @@ export default function FeedStory() {
     </div>
   );
 }
+
+//  <Link
+//         to={`/stories/${user.username}/${firstUnseenStory.id}`}
+//         className={`min-w-22 h-22 shrink-0 ${notSeen ? "bg-linear-to-tr from-yellow-400 via-red-500 to-purple-600" : "bg-gray-300"} rounded-full  relative overflow-hidden flex justify-center items-center`}
+//       >
+//         <img
+//           src={user.avatar}
+//           alt={`Foto Profil ${user.username}`}
+//           className="absolute w-20 h-20 object-cover rounded-full border-2 border-white"
+//         />
+//       </Link>
 
 // [
 //     {
