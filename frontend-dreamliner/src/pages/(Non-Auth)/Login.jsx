@@ -58,7 +58,7 @@ export default function Login() {
     }
     // Lakukan request ke backend untuk login
     dispatch(login(formData));
-    toast.success(data || "Login Berhasil Cuy");
+    toast.success(data || "Login Berhasil Yeay!");
   }
 
   // Function untuk toggle password
