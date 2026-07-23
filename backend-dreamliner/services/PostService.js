@@ -1,0 +1,123 @@
+const { PostRepository } = require("../repository/PostRepository");
+
+class PostService {
+  static async findPostById(PostId, UserId) {
+    // Panggil PostRepository untuk mendapatkan data post berdasarkan id
+    const postData = await PostRepository.findPostById(PostId);
+
+    let isLikeByUserId = false;
+
+    if (UserId && postData) {
+      // Cek apakah user sudah like post ini atau belum
+      isLikeByUserId = postData.Likes.some(
+        (like) => like.UserId === parseInt(UserId),
+      );
+    }
+
+    return {
+      postData,
+      isLikeByUserId,
+      UserId,
+    };
+  }
+
+  static async likePost(PostId, UserId) {
+    //  Cari post berdasarkan PostId
+    const cekPost = await PostRepository.findPostById(PostId);
+
+    if (!cekPost) {
+      throw { name: "POST_NOT_FOUND" };
+    }
+
+    // Cek apakah user sudah like post ini atau belum
+    const cekLike = await PostRepository.findLike(PostId, UserId);
+
+    if (cekLike) {
+      // Jika sudah like, maka unlike (hapus data like)
+      await cekLike.destroy();
+      return { liked: false, action: "unliked", likeData: cekLike };
+    }
+
+    // Jika belum like, maka buat data like baru
+    const newLike = await PostRepository.createLike(PostId, UserId);
+
+    return { liked: true, action: "liked", likeData: newLike };
+  }
+
+  static async commentPost(PostId, UserId, comment) {
+    // Cari post berdasarkan PostId
+    const cekPost = await PostRepository.findPostById(PostId);
+
+    if (!cekPost) {
+      throw { name: "POST_NOT_FOUND" };
+    }
+
+    //  Panggil PostRepository untuk membuat data comment baru
+    const newComment = await PostRepository.createComment(
+      PostId,
+      UserId,
+      comment,
+    );
+    console.log(newComment);
+
+    return newComment;
+  }
+
+  static async getMyFeed(UserId, page = 1, limit = 5) {
+    // Panggil PostRepository untuk mengambil data following user
+    const followingData = await PostRepository.findFollowing(UserId);
+
+    let followingIds = followingData.map((follow) => follow.FollowingId);
+
+    // Panggil PostRepository untuk mengambil data post berasarkan following user
+    const feedData = await PostRepository.findFeedByFollowingIds(
+      followingIds,
+      page,
+      limit,
+    );
+
+    const result = feedData.posts.map((post) => {
+      let plainPost = post.toJSON();
+
+      // Tambahkan properti isLikedByUserId untuk menandai apakah post ini sudah di-like oleh user atau belum
+      plainPost.isLikedByUserId = plainPost.Likes.some(
+        (like) => like.UserId === parseInt(UserId),
+      );
+
+      return plainPost;
+    });
+
+    return {
+      posts: result,
+      totalCount: feedData.totalCount,
+      hasMore: feedData.hasMore,
+    };
+  }
+
+  static async getExplorePosts(UserId, page = 1, limit = 12) {
+    // Panggil PostRepository untuk mengambil data following user
+    const followingData = await PostRepository.findFollowing(UserId);
+
+    let followingIds = followingData.map((follow) => follow.FollowingId);
+
+    // Panggil PostRepository untuk mengambil data post, tetapi ini di exclude dari post following user
+    const exploreData = await PostRepository.findExplorePosts(
+      followingIds,
+      page,
+      limit,
+    );
+
+    return exploreData;
+  }
+
+  static async createPost(UserId, imageUrl, caption) {
+    // Panggil PostRepository untuk membuat data post baru
+    const newPost = await PostRepository.createPost(UserId, imageUrl, caption);
+
+    return newPost;
+  }
+}
+
+module.exports = {
+  PostService,
+};

@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const publicAPI = axios.create({
   baseURL: API_URL,
-  timeout: 10000,
+  timeout: 60000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -13,7 +13,7 @@ export const publicAPI = axios.create({
 
 export const privateAPI = axios.create({
   baseURL: API_URL,
-  timeout: 10000,
+  timeout: 60000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -23,6 +23,13 @@ export const privateAPI = axios.create({
 
 publicAPI.interceptors.request.use(
   (config) => {
+    const token = localStorage.access_token;
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      return config;
+    }
+
     return config;
   },
   (error) => {
@@ -63,13 +70,16 @@ privateAPI.interceptors.response.use(
   (response) => response,
   (error) => {
     const { response } = error;
+    console.log(response, "error privateapi");
 
     if (response?.status === 401) {
       toast.error("Session expired. Please login again.");
       localStorage.clear();
       window.location.href = "/login";
     } else {
-      const message = response?.data?.message || "Something went wrong";
+      const message = response?.statusText || "Something went wrong";
+      console.log(message, "message");
+
       toast.error(message);
     }
 

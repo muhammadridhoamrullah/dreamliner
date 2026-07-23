@@ -6,13 +6,9 @@ function errorHandler(err, req, res, next) {
 
   switch (err.name) {
     case "SequelizeValidationError":
-      statusCode = 400;
-      message = err.errors.map((el) => el.message[0]);
-      break;
-
     case "SequelizeUniqueConstraintError":
       statusCode = 400;
-      message = err.errors.map((el) => el.message[0]);
+      message = err.errors[0].message;
       break;
 
     case "LOGIN_INPUT_INVALID":
@@ -78,6 +74,36 @@ function errorHandler(err, req, res, next) {
     case "USER_UPDATE_FAILED":
       statusCode = 500;
       message = "Failed to update user verification status.";
+      break;
+
+    case "POST_ID_REQUIRED":
+      statusCode = 400;
+      message = "Post ID is required.";
+      break;
+
+    case "COMMENT_CONTENT_REQUIRED":
+      statusCode = 400;
+      message = "Comment content is required.";
+      break;
+
+    case "POST_NOT_FOUND":
+      statusCode = 404;
+      message = "Post not found.";
+      break;
+
+    case "USERNAME_IS_REQUIRED":
+      statusCode = 400;
+      message = "Username is required.";
+      break;
+
+    case "IMAGE_URL_REQUIRED":
+      statusCode = 400;
+      message = "Image URL is required.";
+      break;
+
+    case "MEDIA_URL_REQUIRED":
+      statusCode = 400;
+      message = "Media URL is required.";
       break;
 
     default:

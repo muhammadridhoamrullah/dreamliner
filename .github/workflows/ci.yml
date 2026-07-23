@@ -1,0 +1,52 @@
+name: CI Dreamliner
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend-dreamliner/**'
+            frontend:
+              - 'frontend-dreamliner/**'
+
+  build-backend:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Backend Image (validasi saja)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend-dreamliner
+          push: false
+
+  build-frontend:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Frontend Image (validasi saja)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend-dreamliner
+          push: false
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL_PROD }}
